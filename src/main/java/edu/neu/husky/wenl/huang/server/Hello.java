@@ -3,7 +3,7 @@ package edu.neu.husky.wenl.huang.server;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 
-@Path("/hello")
+@Path("/")
 public class Hello {
     @GET
     @Produces(MediaType.TEXT_PLAIN)
