@@ -4,7 +4,8 @@ import java.util.*;
 import java.util.concurrent.*;
 
 public class TestClient {
-    public static final int nThreads = 10;  // TODO: change to user input as args
+    public static final int nThreads    = 10;   // TODO: change to user input as args
+    public static final int nIterations = 100;  // TODO: change to user input as args
 
     public static void main(String[] args) throws ExecutionException, InterruptedException {
         System.out.println("===============================================================");
@@ -17,11 +18,12 @@ public class TestClient {
         ExecutorService executor = Executors.newFixedThreadPool(nThreads);
         CyclicBarrier barrier = new CyclicBarrier(nThreads);
         HTTPClient client = new HTTPClient("34.215.15.228", "8080");  // TODO: change to user input
-        List<Future<long[]>> futures = new ArrayList<>();
+        List<Future<int[]>> futures = new ArrayList<>();
+        List<Integer> latencies = Collections.synchronizedList(new ArrayList<>());
 
         for (int i = 0; i < nThreads; i++) {
-            Callable<long[]> thread = new WorkerThread(100, barrier, client);
-            Future<long[]> res = executor.submit(thread);
+            Callable<int[]> thread = new WorkerThread(nIterations, barrier, client, latencies);
+            Future<int[]> res = executor.submit(thread);
             System.out.println(String.format("Submitted %d threads", i+1));
             futures.add(res);
         }
@@ -35,17 +37,14 @@ public class TestClient {
         int totalRequests = 0, totalResponses = 0;
 
         for (int i = 0; i < futures.size(); i++) {
-            long[] res = futures.get(i).get();
-            long nReq = res[0], nRes = res[1];
-            long startTime = res[2], endTime = res[3];
+            int[] res = futures.get(i).get();
+            int nReq = res[0], nRes = res[1];
             totalRequests  += nReq;
             totalResponses += nRes;
-            long time = endTime - startTime;
 
             System.out.println(
                String.format(
-                   "Thread %03d: took %d ms, %d requests send, %d responses received",
-                   i+1, time, nReq, nRes
+                   "Thread %03d: %d requests send, %d responses received", i+1, nReq, nRes
                )
             );
         }
@@ -59,5 +58,7 @@ public class TestClient {
         System.out.println("Total number of Successful responses: " + totalResponses);
         System.out.println(String.format("Test Wall Time: %.3f seconds", wallTime / 1000));
         System.out.println("===============================================================");
+        Collections.sort(latencies);
+        System.out.println(latencies.toString());
     }
 }

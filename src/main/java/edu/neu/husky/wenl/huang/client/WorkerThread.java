@@ -1,18 +1,22 @@
 package edu.neu.husky.wenl.huang.client;
 
+import java.util.*;
 import java.util.concurrent.*;
 
-public class WorkerThread implements Callable<long[]> {
+public class WorkerThread implements Callable<int[]> {
     private int nIterations;
     public int nRequests;
     public int nResponses;
     private HTTPClient client;
+    private List<Integer> latencies;
     private CyclicBarrier barrier;
 
-    public WorkerThread(int nIterations, CyclicBarrier barrier, HTTPClient client) {
+    public WorkerThread(int nIterations, CyclicBarrier barrier,
+                        HTTPClient client, List<Integer> latencies) {
         this.nIterations = nIterations;
         this.barrier = barrier;
         this.client = client;
+        this.latencies = latencies;
         this.nRequests = 0;
         this.nResponses = 0;
     }
@@ -33,21 +37,25 @@ public class WorkerThread implements Callable<long[]> {
         }
     }
 
-    public long[] call() {
-        long startTime = System.currentTimeMillis();
-        long endTime;
+    public int[] call() {
         for (int i = 0; i < nIterations; i++) {
+            long startTime = System.currentTimeMillis();
             doGet(client);
+            int latency = (int) (System.currentTimeMillis() - startTime);
+            latencies.add(latency);
+
+            startTime = System.currentTimeMillis();
             doPost(client);
+            latency = (int) (System.currentTimeMillis() - startTime);
+            latencies.add(latency);
 //            System.out.println(String.format("tid: %d, requests sent: %d", Thread.currentThread().getId(), nRequests));
         }
 //        System.out.println(String.format("# of waiting at barrier now = %d", barrier.getNumberWaiting() + 1));
-        endTime = System.currentTimeMillis();
         try {
             barrier.await();
         } catch (InterruptedException | BrokenBarrierException e) {
             e.printStackTrace();
         }
-        return new long[] {this.nRequests, this.nResponses, startTime, endTime};
+        return new int[] {this.nRequests, this.nResponses};
     }
 }
