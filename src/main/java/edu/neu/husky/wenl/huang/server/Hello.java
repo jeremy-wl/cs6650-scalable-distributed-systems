@@ -8,12 +8,12 @@ public class Hello {
     @GET
     @Produces(MediaType.TEXT_PLAIN)
         public String getStatus() {
-        return ("alive");
+        return "alive";
     }
 
     @POST
     @Consumes(MediaType.TEXT_PLAIN)
         public int postText(String content) {
-        return (content.length());
+        return content.length();
     }
 }

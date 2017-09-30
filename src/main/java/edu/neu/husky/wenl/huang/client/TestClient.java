@@ -4,7 +4,7 @@ import java.util.*;
 import java.util.concurrent.*;
 
 public class TestClient {
-    public static final int nThreads    = 10;   // TODO: change to user input as args
+    public static final int nThreads    = 100;   // TODO: change to user input as args
     public static final int nIterations = 100;  // TODO: change to user input as args
 
     public static void main(String[] args) throws ExecutionException, InterruptedException {
@@ -51,14 +51,22 @@ public class TestClient {
 
         wallTime = System.currentTimeMillis() - wallTimeStart;
 
+        Collections.sort(latencies);
+        int latencyMedian  = SpreadsheetTool.getMedian(latencies);
+        double latencyMean = SpreadsheetTool.getMean(latencies);
+        int latencyPercentile95 = SpreadsheetTool.nthPercentile(95, latencies);
+        int latencyPercentile99 = SpreadsheetTool.nthPercentile(99, latencies);
+
         System.out.println("===============================================================");
         System.out.println("All threads complete ...... Time: " + new Date(System.currentTimeMillis()));
         System.out.println("---------------------------------------------------------------");
         System.out.println("Total number of requests sent: " + totalRequests);
         System.out.println("Total number of Successful responses: " + totalResponses);
         System.out.println(String.format("Test Wall Time: %.3f seconds", wallTime / 1000));
+        System.out.println("Mean   latencies for all requests: " + latencyMean);
+        System.out.println("Median latencies for all requests: " + latencyMedian);
+        System.out.println("95th percentile latency: " + latencyPercentile95);
+        System.out.println("99th percentile latency: " + latencyPercentile99);
         System.out.println("===============================================================");
-        Collections.sort(latencies);
-        System.out.println(latencies.toString());
     }
 }
