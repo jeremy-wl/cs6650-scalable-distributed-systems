@@ -4,27 +4,27 @@ import java.util.*;
 import java.util.concurrent.*;
 
 public class TestClient {
-    public static final int nThreads    = 100;   // TODO: change to user input as args
-    public static final int nIterations = 100;  // TODO: change to user input as args
 
     public static void main(String[] args) throws ExecutionException, InterruptedException {
         System.out.println("===============================================================");
         System.out.println("Client starting ...... Time: " + new Date(System.currentTimeMillis()));
-        System.out.println("===============================================================");
+
+        int nThreads = Integer.valueOf(args[0]), nIterations = Integer.valueOf(args[1]);
+        String ip = args[2], port = args[3];
 
         float wallTime;
         long wallTimeStart = System.currentTimeMillis();
 
         ExecutorService executor = Executors.newFixedThreadPool(nThreads);
         CyclicBarrier barrier = new CyclicBarrier(nThreads);
-        HTTPClient client = new HTTPClient("34.215.15.228", "8080");  // TODO: change to user input
+        HTTPClient client = new HTTPClient(ip, port);
         List<Future<int[]>> futures = new ArrayList<>();
         List<Integer> latencies = Collections.synchronizedList(new ArrayList<>());
 
         for (int i = 0; i < nThreads; i++) {
             Callable<int[]> thread = new WorkerThread(nIterations, barrier, client, latencies);
             Future<int[]> res = executor.submit(thread);
-            System.out.println(String.format("Submitted %d threads", i+1));
+//            System.out.println(String.format("Submitted %d threads", i+1));
             futures.add(res);
         }
 

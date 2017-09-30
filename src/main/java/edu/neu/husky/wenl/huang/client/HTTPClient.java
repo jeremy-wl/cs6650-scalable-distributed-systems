@@ -10,8 +10,7 @@ public class HTTPClient {
     private WebTarget resource;
 
     public HTTPClient(String ip, String port) {
-        String url = "http://127.0.0.1:8080";  // TODO: change to code below
-//        String url = "http://" + ip + ":" + port + "/cs6650-assignment/"; // HAVE TO KEEP THE LAST '/'
+        String url = "http://" + ip + ":" + port + "/cs6650-assignment/"; // HAVE TO KEEP THE LAST '/'
         this.resource = ClientBuilder.newClient().target(url);
     }
 
