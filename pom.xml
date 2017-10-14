@@ -4,14 +4,50 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>edu.neu.husky.wenl.huang</groupId>
-    <artifactId>demo</artifactId>
+    <artifactId>SkiRecords</artifactId>
     <version>1.0-SNAPSHOT</version>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.glassfish.jersey</groupId>
+                <artifactId>jersey-bom</artifactId>
+                <version>${jersey.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+
     <dependencies>
         <dependency>
             <groupId>org.glassfish.jersey.containers</groupId>
             <artifactId>jersey-container-servlet</artifactId>
             <version>2.22.2</version>
         </dependency>
+
+        <dependency>
+            <groupId>org.glassfish.jersey.media</groupId>
+            <artifactId>jersey-media-moxy</artifactId>
+        </dependency>
+
     </dependencies>
 
+    <properties>
+        <jersey.version>2.23</jersey.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
 </project>
