@@ -6,14 +6,19 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.concurrent.*;
 
-public class DataProcessor {
+public class DataProcessor implements Runnable {
     private BlockingQueue<String> queue;
+    private String dataSourcePath;
+    private CyclicBarrier barrier;
 
-    public DataProcessor() {
-        queue = new LinkedBlockingDeque<>();
+    public DataProcessor(BlockingQueue<String> queue, String dataSourcePath, CyclicBarrier barrier) {
+        this.queue = queue;   // this queue is shared with WorkerThread, WorkerThreads send http
+        this.dataSourcePath = dataSourcePath; // requests while DataProcessor read & add entry to q
+        this.barrier = barrier;
     }
 
-    public void addRecordsToQueue(String dataSourcePath) {
+    @Override
+    public void run() {
         String line;
         String[] keys = null;
         int records = -1;
@@ -31,16 +36,17 @@ public class DataProcessor {
                                         keys[0], vals[0], keys[1], vals[1], keys[2], vals[2],
                                         keys[3], vals[3], keys[4], vals[4]);
                 queue.add(serializedJSON);
-                System.out.println(serializedJSON);
+//                System.out.println(serializedJSON);
             }
             System.out.println("Total records: " + records);
+//            try {
+//                barrier.await();
+//            } catch (InterruptedException | BrokenBarrierException e) {
+//                e.printStackTrace();
+//            }
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    public static void main(String[] args) {
-        DataProcessor dp = new DataProcessor();
-        dp.addRecordsToQueue("/Users/Jeremy/Projects/Class Projects/CS6550 - BSDS/cs6650-assignment/src/main/java/edu/neu/husky/wenl/huang/client/data/data_day1_20.csv");
-    }
 }

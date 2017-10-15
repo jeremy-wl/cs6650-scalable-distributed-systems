@@ -4,41 +4,37 @@ import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.util.*;
 
-public class GetClient {
+public class GetClient implements HTTPClient {
     private static final String URL = "http://localhost:8080/api/records/myvert";
-    private WebTarget resource;
+    private WebTarget target;
 
-    public GetClient(Map<String, String> queryParams) {
-        StringBuilder queryString = new StringBuilder();
-
-        for (String key : queryParams.keySet()) {
-            queryString.append(queryString.length() == 0 ? "?" : "&");
-            queryString.append(key).append("=");
-            queryString.append(queryParams.get(key));
-        }
-
-        this.resource = ClientBuilder.newClient().target(URL + queryString.toString());
+    public GetClient() {
+        this.target = ClientBuilder.newClient().target(URL);
     }
 
-    public String getRequest() {
-        Response response = resource.request(MediaType.APPLICATION_JSON).get();
-        String jsonRes = null;
-
-        if (response.getStatus() == 200) {
-            jsonRes = response.readEntity(String.class);
-            // TODO: parse json response here
+    public Response request(String params) {  // params is like "a=2&b=3&c=4"
+        String[] paramList = params.split("&");
+        for (String param : paramList) {
+            String[] keyValPair = param.split("=");
+            String key = keyValPair[0];
+            String val = keyValPair[1];
+            target = target.queryParam(key, val);
         }
-        return jsonRes;  // returns JSON string like {"liftRides":20,"verticals":500}
+
+        return target.request(MediaType.APPLICATION_JSON).get();
     }
 
     public static void main(String[] args) {
-        GetClient gc = new GetClient(new HashMap<String, String>(){{
-            put("dayNum", "1");
-            put("skierID", "2");
-        }});
-        String res = gc.getRequest();
-        System.out.println(res);
+        GetClient gc = new GetClient();
+
+        Response res = gc.request("dayNum=1&skierID=2");
+
+        String jsonRes = null;
+        if (res.getStatus() == 200) {
+            jsonRes = res.readEntity(String.class);  // {"liftRides":20,"verticals":500}
+        }
+
+        System.out.println(jsonRes);
     }
 }
