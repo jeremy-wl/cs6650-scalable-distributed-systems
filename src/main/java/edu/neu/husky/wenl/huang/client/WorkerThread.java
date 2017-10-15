@@ -10,12 +10,12 @@ public class WorkerThread implements Callable<int[]> {
     public int nRequests;
     public int nResponses;
     private HTTPClient client;
-    private List<Integer> latencies;
+    private List<long[]> latencies;  // latency against time
     private CyclicBarrier barrier;
     private BlockingQueue<String> requestBodies;
 
     public WorkerThread(CyclicBarrier barrier, HTTPClient client,
-                        BlockingQueue<String> requestBodies, List<Integer> latencies) {
+                        BlockingQueue<String> requestBodies, List<long[]> latencies) {
         this.barrier = barrier;
         this.client = client;
         this.requestBodies = requestBodies;
@@ -44,7 +44,7 @@ public class WorkerThread implements Callable<int[]> {
 //            System.out.println(requestBodies.size() + " Requests to be sent in the queue");
 
             int latency = (int) (System.currentTimeMillis() - startTime);
-            latencies.add(latency);
+            latencies.add(new long[] {startTime, latency});
 
             System.out.println(String.format("tid: %d, requests sent: %d", Thread.currentThread().getId(), nRequests));
 

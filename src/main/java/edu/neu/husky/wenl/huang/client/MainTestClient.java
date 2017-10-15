@@ -2,24 +2,26 @@ package edu.neu.husky.wenl.huang.client;
 
 import edu.neu.husky.wenl.huang.client.http.HTTPClient;
 import edu.neu.husky.wenl.huang.client.http.PostClient;
+import edu.neu.husky.wenl.huang.client.utils.DataWriter;
 
 import java.util.*;
 import java.util.concurrent.*;
 
 public class MainTestClient {
 
-    private static final int nThreads = 50;  // TODO: parameterize this as command line argument
+    private static final int N_THREADS = 50;  // TODO: parameterize this as command line argument
+    private static final String CLIENT_DIR = "src/main/java/edu/neu/husky/wenl/huang/client/";
 
     public static void main(String[] args) throws InterruptedException, ExecutionException {
         BlockingQueue<String> requestBodies = new LinkedBlockingDeque<>();
 
-        String dataSourcePath = "src/main/java/edu/neu/husky/wenl/huang/client/data/data_day1_10k.csv";
-        CyclicBarrier barrier = new CyclicBarrier(nThreads);
+        String dataSourcePath = CLIENT_DIR + "data/data_day1_10k.csv"; // FIXME: change to 800k data
+        CyclicBarrier barrier = new CyclicBarrier(N_THREADS);
         DataProcessor dp = new DataProcessor(requestBodies, dataSourcePath, barrier);
 
-        ExecutorService executor = Executors.newFixedThreadPool(nThreads+1); // +1 csv reading thread
+        ExecutorService executor = Executors.newFixedThreadPool(N_THREADS+1); // +1 csv reading thread
         HTTPClient httpClient = new PostClient();
-        List<Integer> latencies = Collections.synchronizedList(new ArrayList<>());
+        List<long[]> latencies = Collections.synchronizedList(new ArrayList<>());
         List<Future<int[]>> futures = new ArrayList<>();
 
         float wallTime;
@@ -27,7 +29,7 @@ public class MainTestClient {
 
         executor.submit(dp);
 
-        for (int i = 0; i < nThreads; i++) {
+        for (int i = 0; i < N_THREADS; i++) {
             Callable<int[]> thread = new WorkerThread(barrier, httpClient, requestBodies, latencies);
             Future<int[]> res = executor.submit(thread);
             System.out.println(String.format("Submitted %d threads", i+1));
@@ -57,8 +59,6 @@ public class MainTestClient {
 
         wallTime = System.currentTimeMillis() - wallTimeStart;
 
-        Collections.sort(latencies);
-
         System.out.println("===============================================================");
         System.out.println("All threads complete ...... Time: " + new Date(System.currentTimeMillis()));
         System.out.println("---------------------------------------------------------------");
@@ -66,6 +66,12 @@ public class MainTestClient {
         System.out.println("Total number of Successful responses: " + totalResponses);
         System.out.println(String.format("Test Wall Time: %.3f seconds", wallTime / 1000));
         System.out.println("===============================================================");
+
+        String testResultDir = CLIENT_DIR + "data/test_results/";
+
+
+        System.out.println("Writing latency data to file ......");
+        DataWriter.writeToFile(testResultDir, latencies);
 
     }
 }
