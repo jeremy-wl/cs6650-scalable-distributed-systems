@@ -1,6 +1,8 @@
 package edu.neu.husky.wenl.huang.server.models;
 
-public class LiftRecord {
+import java.io.Serializable;
+
+public class LiftRecord implements Serializable, Comparable<LiftRecord> {
     private int resortId;
     private int day;
     private int skierId;
@@ -55,5 +57,15 @@ public class LiftRecord {
 
     public void setTime(int time) {
         this.time = time;
+    }
+
+    public int compareTo(LiftRecord that) {
+        return this.time - that.getTime();
+    }
+
+    @Override
+    public String toString() {
+        return "LiftRecord{" + "resortId=" + resortId + ", day=" + day + ", " +
+               "skierId=" + skierId + ", liftId=" + liftId + ", time=" + time + '}';
     }
 }

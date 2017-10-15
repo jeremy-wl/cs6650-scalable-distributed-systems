@@ -13,7 +13,9 @@ public class DailySkiRecordService {
     @Path("/myvert")  // returns the skier's daily ski summary
     public DailySkiRecord getDailySkiRecord(@DefaultValue("-1") @QueryParam("dayNum")  int dayNum,
                                             @DefaultValue("-1") @QueryParam("skierID") int skierID) {
-        if (dayNum == -1 || skierID == -1) return null;
+        if (dayNum == -1 || skierID == -1) {
+            throw new BadRequestException("You must only pass dayNum and skierID as params here");
+        }
         return new DailySkiRecord(500, 20);
     }
 }
