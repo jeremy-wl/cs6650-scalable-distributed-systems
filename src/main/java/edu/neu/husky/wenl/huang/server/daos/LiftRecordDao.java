@@ -13,7 +13,7 @@ public class LiftRecordDao {
     }
 
     public LiftRecord create(LiftRecord liftRecord) {
-        dynamoDBMapper.save(liftRecord);  // liftRecord returned from db is changed in-place
-        return liftRecord;                // uuid is added from the db side
+        dynamoDBMapper.save(liftRecord);  // after this operation, liftRecord is the obj returned
+        return liftRecord;                // from the db (obj gets changed in-place)
     }
 }

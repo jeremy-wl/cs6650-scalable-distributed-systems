@@ -9,13 +9,13 @@ import java.util.concurrent.*;
 
 public class MainTestClient {
 
-    private static final int N_THREADS = 50;  // TODO: parameterize this as command line argument
+    private static final int N_THREADS = 10;  // TODO: parameterize this as command line argument
     private static final String CLIENT_DIR = "src/main/java/edu/neu/husky/wenl/huang/client/";
 
     public static void main(String[] args) throws InterruptedException, ExecutionException {
         BlockingQueue<String> requestBodies = new LinkedBlockingDeque<>();
 
-        String dataSourcePath = CLIENT_DIR + "data/data_day1_100k.csv"; // FIXME: change to 800k data
+        String dataSourcePath = CLIENT_DIR + "data/data_day1_20.csv"; // FIXME: change to 800k data
         CyclicBarrier barrier = new CyclicBarrier(N_THREADS);
         DataProcessor dp = new DataProcessor(requestBodies, dataSourcePath, barrier);
 

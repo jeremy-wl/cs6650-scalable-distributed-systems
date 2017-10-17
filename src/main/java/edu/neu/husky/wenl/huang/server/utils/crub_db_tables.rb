@@ -15,19 +15,34 @@ db = Aws::DynamoDB::Resource.new(
   secret_access_key: ENV['AWS_SECRET_KEY'],
   region:            'us-west-2'
 )
+
+
 ######################################################
-#                Creating a table                    #
+#                Deleting table                      #
+######################################################
+
+# db.table('lift_records').delete
+
+
+######################################################
+#                Creating table                      #
 ######################################################
 
 # db.create_table(
 #   attribute_definitions: [{
-#     attribute_name: 'recordId',
-#     attribute_type: 'S'
+#     attribute_name: 'skierId',
+#     attribute_type: 'N'        # number
+#   }, {
+#     attribute_name: 'day',     # sort key (day + time), to form a unique combination with hash key
+#     attribute_type: 'S'        # string
 #   }],
 #   table_name: 'lift_records',
 #   key_schema: [{
-#     attribute_name: 'recordId',
+#     attribute_name: 'skierId', # partition key
 #     key_type: 'HASH'
+#   }, {
+#     attribute_name: 'day',     # sort key
+#     key_type: 'RANGE'
 #   }],
 #   provisioned_throughput: {
 #     read_capacity_units: 5,
@@ -37,10 +52,3 @@ db = Aws::DynamoDB::Resource.new(
 #     stream_enabled: false
 #   }
 # )
-
-
-######################################################
-#                Deleting a table                    #
-######################################################
-
-# db.table('lift_records').delete

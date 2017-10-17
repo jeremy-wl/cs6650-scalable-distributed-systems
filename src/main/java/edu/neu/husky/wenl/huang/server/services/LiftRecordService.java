@@ -19,6 +19,11 @@ public class LiftRecordService {
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/load")    // creates a lift record per request
     public LiftRecord createSkiRecord(LiftRecord liftRecord) {
+        String day = liftRecord.getDay();
+        int time = liftRecord.getTime();
+
+        liftRecord.setDay(day + "#" + time);
+
         return liftRecordDao.create(liftRecord);
     }
 }
