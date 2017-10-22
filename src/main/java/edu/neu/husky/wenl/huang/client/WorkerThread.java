@@ -7,14 +7,14 @@ import java.util.*;
 import java.util.concurrent.*;
 
 public class WorkerThread implements Callable<int[]> {
-    public int nRequests;
-    public int nResponses;
+    private int nRequests;
+    private int nResponses;
     private HTTPClient client;
     private List<long[]> latencies;  // latency against time
     private CyclicBarrier barrier;
     private BlockingQueue<String> requestBodies;
 
-    public WorkerThread(CyclicBarrier barrier, HTTPClient client,
+    WorkerThread(CyclicBarrier barrier, HTTPClient client,
                         BlockingQueue<String> requestBodies, List<long[]> latencies) {
         this.barrier = barrier;
         this.client = client;
@@ -24,7 +24,7 @@ public class WorkerThread implements Callable<int[]> {
         this.nResponses = 0;
     }
 
-    public void doHttpRequest(HTTPClient client, String params) {
+    private void doHttpRequest(HTTPClient client, String params) {
         nRequests++;
         Response res = client.request(params);
         if (res.getStatus() == 200) {
@@ -33,7 +33,8 @@ public class WorkerThread implements Callable<int[]> {
         res.close();
     }
 
-    public int[] call() {
+    public int[] call() throws InterruptedException {
+        Thread.sleep(3000);  // FIXME: 10/22/17 this currently runs fast than the data processor
         while (!requestBodies.isEmpty()) {
             String requestBody = requestBodies.poll();
 

@@ -23,6 +23,11 @@ public class LiftRecordDao {
         return liftRecord;                // from the db (obj gets changed in-place)
     }
 
+    public List<LiftRecord> batchCreate(List<LiftRecord> liftRecords) {
+        dynamoDBMapper.batchSave(liftRecords);
+        return liftRecords;
+    }
+
     /**
      * @param skierId skier id
      * @param day day number
