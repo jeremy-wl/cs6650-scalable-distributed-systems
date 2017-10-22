@@ -16,6 +16,6 @@ public class DailySkiRecordService {
         if (dayNum == -1 || skierID == -1) {
             throw new BadRequestException("You must only pass dayNum and skierID as params here");
         }
-        return new DailySkiRecord(500, 20);
+        return null;
     }
 }

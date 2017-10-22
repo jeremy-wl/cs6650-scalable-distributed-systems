@@ -15,7 +15,7 @@ public class MainTestClient {
     public static void main(String[] args) throws InterruptedException, ExecutionException {
         BlockingQueue<String> requestBodies = new LinkedBlockingDeque<>();
 
-        String dataSourcePath = CLIENT_DIR + "data/data_day1_20.csv"; // FIXME: change to 800k data
+        String dataSourcePath = CLIENT_DIR + "data/data_day1_10k.csv"; // FIXME: change to 800k data
         CyclicBarrier barrier = new CyclicBarrier(N_THREADS);
         DataProcessor dp = new DataProcessor(requestBodies, dataSourcePath, barrier);
 

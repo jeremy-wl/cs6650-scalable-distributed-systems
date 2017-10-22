@@ -16,39 +16,75 @@ db = Aws::DynamoDB::Resource.new(
   region:            'us-west-2'
 )
 
-
-######################################################
-#                Deleting table                      #
-######################################################
-
-# db.table('lift_records').delete
+##############################################################################
+#                               Deleting tables                              #
+##############################################################################
 
 
-######################################################
-#                Creating table                      #
-######################################################
+db.table('lift_records').delete
+db.table('daily_ski_records').delete
 
-# db.create_table(
-#   attribute_definitions: [{
-#     attribute_name: 'skierId',
-#     attribute_type: 'N'        # number
-#   }, {
-#     attribute_name: 'day',     # sort key (day + time), to form a unique combination with hash key
-#     attribute_type: 'S'        # string
-#   }],
-#   table_name: 'lift_records',
-#   key_schema: [{
-#     attribute_name: 'skierId', # partition key
-#     key_type: 'HASH'
-#   }, {
-#     attribute_name: 'day',     # sort key
-#     key_type: 'RANGE'
-#   }],
-#   provisioned_throughput: {
-#     read_capacity_units: 5,
-#     write_capacity_units: 5
-#   },
-#   stream_specification: {
-#     stream_enabled: false
-#   }
-# )
+#-----------------------------------------------------------------------------
+
+##############################################################################
+#                               Creating tables                              #
+##############################################################################
+
+
+#######################################################
+#                     lift_records                    #
+#######################################################
+
+db.create_table(
+  attribute_definitions: [{
+    attribute_name: 'skierId',
+    attribute_type: 'N'        # number
+  }, {
+    attribute_name: 'day',     # sort key (day + time), to form a unique combination with hash key
+    attribute_type: 'S'        # string
+  }],
+  table_name: 'lift_records',
+  key_schema: [{
+    attribute_name: 'skierId', # partition key
+    key_type: 'HASH'
+  }, {
+    attribute_name: 'day',     # sort key
+    key_type: 'RANGE'
+  }],
+  provisioned_throughput: {
+    read_capacity_units: 13,
+    write_capacity_units: 13
+  },
+  stream_specification: {
+    stream_enabled: false
+  }
+)
+
+#######################################################
+#                daily_ski_records                    #
+#######################################################
+
+db.create_table(
+  attribute_definitions: [{
+    attribute_name: 'skierId',
+    attribute_type: 'N'        # number
+  }, {
+    attribute_name: 'day',     # sort key
+    attribute_type: 'S'
+  }],
+  table_name: 'daily_ski_records',
+  key_schema: [{
+    attribute_name: 'skierId', # partition key
+    key_type: 'HASH'
+  }, {
+    attribute_name: 'day',     # sort key
+    key_type: 'RANGE'
+  }],
+  provisioned_throughput: {
+    read_capacity_units: 12,
+    write_capacity_units: 12
+  },
+  stream_specification: {
+    stream_enabled: false
+  }
+)
