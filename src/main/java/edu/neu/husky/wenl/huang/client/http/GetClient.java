@@ -6,11 +6,10 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 public class GetClient implements HTTPClient {
-    private static final String URL = "http://localhost:8080/api/records/myvert";
     private WebTarget target;
 
-    public GetClient() {
-        this.target = ClientBuilder.newClient().target(URL);
+    public GetClient(String url) {
+        this.target = ClientBuilder.newClient().target(url);
     }
 
     public Response request(String params) {  // params is like "a=2&b=3&c=4"
@@ -23,18 +22,5 @@ public class GetClient implements HTTPClient {
         }
 
         return target.request(MediaType.APPLICATION_JSON).get();
-    }
-
-    public static void main(String[] args) {
-        GetClient gc = new GetClient();
-
-        Response res = gc.request("dayNum=1&skierID=2");
-
-        String jsonRes = null;
-        if (res.getStatus() == 200) {
-            jsonRes = res.readEntity(String.class);  // {"liftRides":20,"verticals":500}
-        }
-
-        System.out.println(jsonRes);
     }
 }

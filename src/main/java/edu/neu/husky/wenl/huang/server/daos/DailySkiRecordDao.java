@@ -1,48 +1,34 @@
 package edu.neu.husky.wenl.huang.server.daos;
 
-import com.mongodb.client.MongoDatabase;
-import edu.neu.husky.wenl.huang.server.models.DailySkiRecord;
-import edu.neu.husky.wenl.huang.server.models.LiftRecord;
+import com.mongodb.client.MongoCollection;
+import org.bson.Document;
 
-import java.util.*;
+import static com.mongodb.client.model.Filters.and;
+import static com.mongodb.client.model.Filters.eq;
+
 
 public class DailySkiRecordDao {
-    private MongoDatabase db;
+    private static MongoCollection<Document> dbCollection;
+    private static DailySkiRecordDao dailySkiRecordDao;
 
-    public DailySkiRecordDao() {
-//        MongoDatabase db = Credentials.getDBClient();
-//        this.dynamoDBMapper = new DynamoDBMapper(db);
-    }
-
-    public DailySkiRecord create(List<LiftRecord> liftRecords) {
-        if (liftRecords == null)  return null;
-        int liftRides = liftRecords.size();
-        int verticals = 0;
-        for (LiftRecord liftRecord : liftRecords) {
-            int liftId = liftRecord.getLiftId();
-            verticals += getVerticalByLiftId(liftId);
+    public static DailySkiRecordDao getDailySkiRecordDao() {
+        if (dailySkiRecordDao == null) {
+            dailySkiRecordDao = new DailySkiRecordDao();
         }
-        LiftRecord liftRecord = liftRecords.get(0);
-
-        int skierId = liftRecord.getSkierId();
-        String dayStr = liftRecord.getDay();
-
-        int day = Integer.valueOf(dayStr.split("#")[0]);
-
-        DailySkiRecord res = new DailySkiRecord(skierId, day, verticals, liftRides);
-//        dynamoDBMapper.save(res);
-        return res;
+        return dailySkiRecordDao;
     }
 
-    /**
-     * Lifts 1-10 rise 200m vertical. Lifts 11-20 are 300m vertical.
-     * Lifts 21-30 are 400m vertical, and lifts 31-40 and 500m vertical.
-     */
-    private int getVerticalByLiftId(int liftId) {
-        if (liftId >= 1  && liftId <= 10)  return 200;
-        if (liftId >= 11 && liftId <= 20)  return 300;
-        if (liftId >= 21 && liftId <= 30)  return 400;
-        if (liftId >= 31 && liftId <= 40)  return 500;
-        return -1;
+
+    private DailySkiRecordDao() {
+        dbCollection = DBConnection.getCollectionDailyRecords();
+    }
+
+    public Document create(Document document) {
+        dbCollection.insertOne(document);
+        return document;
+    }
+
+    public Document get(int skierId, int day) {
+        return dbCollection.find(and(eq("skierId", skierId), eq("day", day))).first();
     }
 }

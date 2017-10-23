@@ -1,15 +1,24 @@
 package edu.neu.husky.wenl.huang.server.daos;
 
+import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
-import edu.neu.husky.wenl.huang.server.models.LiftRecord;
 import org.bson.Document;
 
-import java.util.*;
+import static com.mongodb.client.model.Filters.and;
+import static com.mongodb.client.model.Filters.eq;
 
 public class LiftRecordDao {
-    private MongoCollection<Document> dbCollection;
+    private static LiftRecordDao liftRecordDao;
+    private static MongoCollection<Document> dbCollection;
 
-    public LiftRecordDao() {
+    public static LiftRecordDao getLiftRecordDao() {
+        if (liftRecordDao == null) {
+            liftRecordDao = new LiftRecordDao();
+        }
+        return liftRecordDao;
+    }
+
+    private LiftRecordDao() {
         dbCollection = DBConnection.getCollectionLiftRecords();
     }
 
@@ -23,10 +32,7 @@ public class LiftRecordDao {
      * @param day day number
      * @return all lift records for that skier on that day
      */
-    public List<LiftRecord> getLiftRecords(int skierId, int day) {
-        LiftRecord liftRecord = new LiftRecord();
-        liftRecord.setSkierId(skierId);
-
-        return null;  // FIXME: 10/22/17
+    public FindIterable<Document> getLiftRecords(int skierId, int day) {
+        return dbCollection.find(and(eq("skierId", skierId), eq("day", day)));
     }
 }

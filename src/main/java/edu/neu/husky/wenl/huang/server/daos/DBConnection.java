@@ -8,6 +8,8 @@ import org.bson.Document;
 // Singleton Class
 class DBConnection {
     private static MongoDatabase db;
+    private static MongoCollection<Document> liftRecordsCollection;
+    private static MongoCollection<Document> dailyRecordsCollection;
 
     private static MongoDatabase getDB() {
         if (db == null) {
@@ -17,6 +19,16 @@ class DBConnection {
     }
 
     static MongoCollection<Document> getCollectionLiftRecords() {
-        return getDB().getCollection("lift-records");
+        if (liftRecordsCollection == null) {
+            liftRecordsCollection = getDB().getCollection("lift-records");
+        }
+        return liftRecordsCollection;
+    }
+
+    static MongoCollection<Document> getCollectionDailyRecords() {
+        if (dailyRecordsCollection == null) {
+            dailyRecordsCollection = getDB().getCollection("daily-ski-records");
+        }
+        return dailyRecordsCollection;
     }
 }
