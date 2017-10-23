@@ -17,7 +17,7 @@ public class MainTestClient {
 
         String dataSourcePath = CLIENT_DIR + "data/data_day1_10k.csv"; // FIXME: change to 800k data
         CyclicBarrier barrier = new CyclicBarrier(N_THREADS);
-        DataProcessor dp = new DataProcessor(requestBodies, dataSourcePath);
+        DataProcessor dp = new DataProcessor(requestBodies, dataSourcePath, barrier);
 
         ExecutorService executor = Executors.newFixedThreadPool(N_THREADS+1); // +1 csv reading thread
         HTTPClient httpClient = new PostClient();

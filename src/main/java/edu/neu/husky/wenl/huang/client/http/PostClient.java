@@ -7,7 +7,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 public class PostClient implements HTTPClient {
-    private static final String URL = "http://localhost:8080/api/records/batch-load";
+    private static final String URL = "http://localhost:8080/api/records/load";
     private WebTarget resource;
 
     public PostClient() {

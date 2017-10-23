@@ -31,25 +31,7 @@ public class LiftRecordService {
         return liftRecordDao.create(liftRecord);
     }
 
-    @POST
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
-    @Path("/batch-load")    // batch creates 25 lift records per request
-    public List<LiftRecord> createLiftRecord(List<LiftRecord> liftRecords) {
-        for (LiftRecord liftRecord : liftRecords) {
-            setDay(liftRecord);
-        }
-        return liftRecordDao.batchCreate(liftRecords);
-    }
-
     public List<LiftRecord> getLiftRecords(int skierId, int day) {
         return null;  // FIXME: 10/16/17
-    }
-
-    private void setDay(LiftRecord liftRecord) {
-        String day = liftRecord.getDay();
-        int time = liftRecord.getTime();
-
-        liftRecord.setDay(day + "#" + time);
     }
 }
