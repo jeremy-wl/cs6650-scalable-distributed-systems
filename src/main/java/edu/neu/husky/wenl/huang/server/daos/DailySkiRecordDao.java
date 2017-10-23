@@ -1,18 +1,17 @@
 package edu.neu.husky.wenl.huang.server.daos;
 
-import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
+import com.mongodb.client.MongoDatabase;
 import edu.neu.husky.wenl.huang.server.models.DailySkiRecord;
 import edu.neu.husky.wenl.huang.server.models.LiftRecord;
 
 import java.util.*;
 
 public class DailySkiRecordDao {
-    private DynamoDBMapper dynamoDBMapper;
+    private MongoDatabase db;
 
     public DailySkiRecordDao() {
-        AmazonDynamoDB db = Credentials.getDBClient();
-        this.dynamoDBMapper = new DynamoDBMapper(db);
+//        MongoDatabase db = Credentials.getDBClient();
+//        this.dynamoDBMapper = new DynamoDBMapper(db);
     }
 
     public DailySkiRecord create(List<LiftRecord> liftRecords) {
@@ -31,7 +30,7 @@ public class DailySkiRecordDao {
         int day = Integer.valueOf(dayStr.split("#")[0]);
 
         DailySkiRecord res = new DailySkiRecord(skierId, day, verticals, liftRides);
-        dynamoDBMapper.save(res);
+//        dynamoDBMapper.save(res);
         return res;
     }
 

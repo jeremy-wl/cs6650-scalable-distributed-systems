@@ -1,26 +1,21 @@
 package edu.neu.husky.wenl.huang.server.daos;
 
-import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBQueryExpression;
-import com.amazonaws.services.dynamodbv2.model.AttributeValue;
-import com.amazonaws.services.dynamodbv2.model.ComparisonOperator;
-import com.amazonaws.services.dynamodbv2.model.Condition;
+import com.mongodb.client.MongoCollection;
 import edu.neu.husky.wenl.huang.server.models.LiftRecord;
+import org.bson.Document;
 
 import java.util.*;
 
 public class LiftRecordDao {
-    private DynamoDBMapper dynamoDBMapper;
+    private MongoCollection<Document> dbCollection;
 
     public LiftRecordDao() {
-        AmazonDynamoDB db = Credentials.getDBClient();
-        this.dynamoDBMapper = new DynamoDBMapper(db);
+        dbCollection = DBConnection.getCollectionLiftRecords();
     }
 
-    public LiftRecord create(LiftRecord liftRecord) {
-        dynamoDBMapper.save(liftRecord);  // after this operation, liftRecord is the obj returned
-        return liftRecord;                // from the db (obj gets changed in-place)
+    public Document create(Document liftRecord) {
+        dbCollection.insertOne(liftRecord);
+        return liftRecord;
     }
 
     /**
@@ -32,14 +27,6 @@ public class LiftRecordDao {
         LiftRecord liftRecord = new LiftRecord();
         liftRecord.setSkierId(skierId);
 
-        Condition rangeKeyCondition = new Condition();
-        rangeKeyCondition
-                .withComparisonOperator(ComparisonOperator.BEGINS_WITH)
-                .withAttributeValueList(new AttributeValue(day + "#"));
-
-        return dynamoDBMapper.query(LiftRecord.class,
-                new DynamoDBQueryExpression<LiftRecord>()
-                        .withHashKeyValues(liftRecord)
-                        .withRangeKeyCondition("day", rangeKeyCondition));
+        return null;  // FIXME: 10/22/17
     }
 }

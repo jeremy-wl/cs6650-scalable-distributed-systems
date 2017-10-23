@@ -1,13 +1,6 @@
 package edu.neu.husky.wenl.huang.server.models;
 
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBHashKey;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBRangeKey;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTable;
-
-import java.io.Serializable;
-
-@DynamoDBTable(tableName="lift_records")
-public class LiftRecord implements Serializable, Comparable<LiftRecord> {
+public class LiftRecord implements Comparable<LiftRecord> {
     private int skierId;
     private String day;
     private int resortId;
@@ -16,15 +9,13 @@ public class LiftRecord implements Serializable, Comparable<LiftRecord> {
 
     public LiftRecord() {}
 
-    @DynamoDBHashKey(attributeName = "skierId")
     public int getSkierId() {
         return skierId;
     }
 
-    @DynamoDBRangeKey
-    public String getDay() {  // day (day#time) is the sort key, string-appended by '#' + time,
-        return day;           // in order to form a unique combination with the partition key,
-    }                         // and enable efficient queries
+    public String getDay() {
+        return day;
+    }
 
     public int getResortId() {
         return resortId;
