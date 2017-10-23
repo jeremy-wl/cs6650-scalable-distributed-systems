@@ -9,12 +9,10 @@ import java.util.concurrent.*;
 public class DataProcessor implements Runnable {
     private BlockingQueue<String> queue;
     private String dataSourcePath;
-    private CyclicBarrier barrier;
 
-    public DataProcessor(BlockingQueue<String> queue, String dataSourcePath, CyclicBarrier barrier) {
+    public DataProcessor(BlockingQueue<String> queue, String dataSourcePath) {
         this.queue = queue;   // this queue is shared with WorkerThread, WorkerThreads send http
         this.dataSourcePath = dataSourcePath; // requests while DataProcessor read & add entry to q
-        this.barrier = barrier;
     }
 
     @Override
@@ -39,14 +37,8 @@ public class DataProcessor implements Runnable {
 //                System.out.println(serializedJSON);
             }
             System.out.println("Total records: " + records);
-//            try {
-//                barrier.await();
-//            } catch (InterruptedException | BrokenBarrierException e) {
-//                e.printStackTrace();
-//            }
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
-
 }
