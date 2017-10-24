@@ -4,6 +4,8 @@ import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import org.bson.Document;
 
+import java.util.*;
+
 import static com.mongodb.client.model.Filters.and;
 import static com.mongodb.client.model.Filters.eq;
 
@@ -25,6 +27,10 @@ public class LiftRecordDao {
     public Document create(Document liftRecord) {
         dbCollection.insertOne(liftRecord);
         return liftRecord;
+    }
+
+    public void createMany(List<Document> liftRecords) {
+        dbCollection.insertMany(liftRecords);
     }
 
     /**

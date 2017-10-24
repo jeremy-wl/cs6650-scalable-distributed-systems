@@ -7,7 +7,7 @@ import edu.neu.husky.wenl.huang.client.utils.DataWriter;
 import java.util.*;
 import java.util.concurrent.*;
 
-public class LiftRecordsWriter {
+class LiftRecordsWriter {
 
     private static final String ENDPOINT_LOAD_LIFT_RECORDS = "/api/records/load-lift-records";
 
