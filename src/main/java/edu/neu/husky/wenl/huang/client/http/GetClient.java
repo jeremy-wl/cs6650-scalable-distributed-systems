@@ -12,15 +12,17 @@ public class GetClient implements HTTPClient {
         this.target = ClientBuilder.newClient().target(url);
     }
 
-    public Response request(String params) {  // params is like "a=2&b=3&c=4"
+    public Response request(String params) {     // params is like "a=2&b=3&c=4"
         String[] paramList = params.split("&");
-        for (String param : paramList) {
-            String[] keyValPair = param.split("=");
+        WebTarget newTarget = target;               // Bug: should not assign this.target
+                                                    //      to queryParam below, because
+        for (String param : paramList) {            //      the client is shared among threads
+            String[] keyValPair = param.split("="); //      and target val should not be changed
             String key = keyValPair[0];
             String val = keyValPair[1];
-            target = target.queryParam(key, val);
+            newTarget = newTarget.queryParam(key, val);
         }
 
-        return target.request(MediaType.APPLICATION_JSON).get();
+        return newTarget.request(MediaType.APPLICATION_JSON).get();
     }
 }

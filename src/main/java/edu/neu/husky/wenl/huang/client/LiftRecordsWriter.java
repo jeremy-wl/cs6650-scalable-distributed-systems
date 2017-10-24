@@ -30,8 +30,8 @@ public class LiftRecordsWriter {
             executor.submit(dp);
 
             for (int i = 0; i < nThreads; i++) {
-                Callable<int[]> thread = new WorkerThread(barrier, clientLoadLiftRecords, requestBodies,
-                        latencies);
+                AbstractThread<String> thread = new WriterThread(barrier, clientLoadLiftRecords,
+                                                                 requestBodies, latencies);
                 Future<int[]> res = executor.submit(thread);
                 System.out.println(String.format("Submitted %d threads", i+1));
                 futures.add(res);
@@ -68,7 +68,7 @@ public class LiftRecordsWriter {
             System.out.println(String.format("Test Wall Time: %.3f seconds", wallTime / 1000));
             System.out.println("===============================================================");
 
-            String testResultDir = Main.CLIENT_DIR + "data/test_results/";
+            String testResultDir = Main.CLIENT_DIR + "data/test_results/writer/";
 
 
             System.out.println("Writing latency data to file ......");
