@@ -19,8 +19,8 @@ class SkiRecordsGenerator {
         clientGenDailySkiRecords.request("day=" + dayNum);
 
         System.out.println("---------------------------------------------------------------");
-        double timeFinished = (System.currentTimeMillis() - timeStart) / 1000;
-        System.out.printf("Finished in %.3f seconds.", timeFinished);
+        double timeFinished = (System.currentTimeMillis() - timeStart) / 1000.0;
+        System.out.println(String.format("Finished in %.3f seconds.", timeFinished));
 
         System.out.println("===============================================================");
     }

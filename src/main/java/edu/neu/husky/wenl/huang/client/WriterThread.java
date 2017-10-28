@@ -25,7 +25,9 @@ public class WriterThread extends AbstractThread<String> {
             int latency = (int) (System.currentTimeMillis() - startTime);
             latencies.add(new long[] {startTime, latency});
 
-            System.out.println(String.format("tid: %d, requests sent: %d", Thread.currentThread().getId(), nRequests));
+            if (nRequests % 50 == 0) {
+                System.out.println(String.format("tid: %d, requests sent: %d", Thread.currentThread().getId(), nRequests));
+            }
 
         }
 

@@ -20,7 +20,7 @@ class DailySkiRecordsReader {
      *  - {21, 30}
      */
 
-    static void read(int nThreads, int skierIdRange, int dayNum) {
+    static void read(int nThreads, int dayNum, int skierIdRange) {
         try {
             BlockingQueue<int[]> skierIdRanges = getRanges(nThreads, skierIdRange);
             CyclicBarrier barrier = new CyclicBarrier(nThreads);

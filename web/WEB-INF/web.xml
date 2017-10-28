@@ -11,6 +11,12 @@
             <param-value>edu.neu.husky.wenl.huang</param-value>
         </init-param>
         <load-on-startup>1</load-on-startup>
+        <multipart-config>
+            <!-- 500MB max, enable for batch request -->
+            <max-file-size>524288000</max-file-size>
+            <max-request-size>524288000</max-request-size>
+            <file-size-threshold>0</file-size-threshold>
+        </multipart-config>
     </servlet>
     <servlet-mapping>
         <servlet-name>JAX-RS Servlet</servlet-name>
