@@ -2,7 +2,7 @@ package edu.neu.husky.wenl.huang.client;
 
 import edu.neu.husky.wenl.huang.client.http.GetClient;
 import edu.neu.husky.wenl.huang.client.http.HTTPClient;
-import edu.neu.husky.wenl.huang.client.utils.DataWriter;
+import edu.neu.husky.wenl.huang.client.utils.data.DataWriter;
 
 import java.util.*;
 import java.util.concurrent.*;

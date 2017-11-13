@@ -3,6 +3,8 @@ package edu.neu.husky.wenl.huang.server.services;
 import com.mongodb.client.FindIterable;
 import edu.neu.husky.wenl.huang.server.daos.DailySkiRecordDao;
 import edu.neu.husky.wenl.huang.server.daos.LiftRecordDao;
+import edu.neu.husky.wenl.huang.server.rabbitmq.RabbitMQUtils;
+import edu.neu.husky.wenl.huang.server.rabbitmq.RoutingKeys;
 import org.bson.Document;
 
 import javax.ws.rs.*;
@@ -27,12 +29,32 @@ public class DailySkiRecordService {
     @Path("/myvert")  // returns the skier's daily ski summary
     public String getDailySkiRecord(@DefaultValue("-1") @QueryParam("dayNum")  int dayNum,
                                     @DefaultValue("-1") @QueryParam("skierId") int skierId) {
-        if (dayNum == -1 || skierId == -1) {
-            throw new BadRequestException("You must only pass dayNum and skierId as params here");
-        }
+        int error = 0;
+        long responseStart, dbQueryStart, endTime, responseTime = -1, dbQueryTime = -1;
+        String res = null;
 
-        Document document = dailySkiRecordDao.get(skierId, dayNum);
-        return document.toJson();
+        try {
+            responseStart = System.currentTimeMillis();
+
+            if (dayNum == -1 || skierId == -1) {
+                throw new BadRequestException("You must only pass dayNum and skierId as params here");
+            }
+
+            dbQueryStart = System.currentTimeMillis();
+            Document document = dailySkiRecordDao.get(skierId, dayNum);
+            dbQueryTime = System.currentTimeMillis() - dbQueryStart;
+
+            res = document.toJson();
+            responseTime = System.currentTimeMillis() - responseStart;
+
+        } catch (Exception e) {
+            error = 1;
+        }
+        RabbitMQUtils.publish(RoutingKeys.GET,
+                String.format("%d,%d,%d",
+                        responseTime, dbQueryTime, error));
+
+        return res;
     }
 
     @GET

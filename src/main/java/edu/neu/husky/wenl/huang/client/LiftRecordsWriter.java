@@ -2,7 +2,7 @@ package edu.neu.husky.wenl.huang.client;
 
 import edu.neu.husky.wenl.huang.client.http.HTTPClient;
 import edu.neu.husky.wenl.huang.client.http.PostClient;
-import edu.neu.husky.wenl.huang.client.utils.DataWriter;
+import edu.neu.husky.wenl.huang.client.utils.data.DataWriter;
 
 import java.util.*;
 import java.util.concurrent.*;
@@ -15,7 +15,7 @@ class LiftRecordsWriter {
         try {
             BlockingQueue<String> requestBodies = new LinkedBlockingDeque<>();
 
-            String dataSourcePath = Main.CLIENT_DIR + "data/data_day1_800k.csv";
+            String dataSourcePath = Main.CLIENT_DIR + "data/data_day1_3k.csv";
             CyclicBarrier barrier = new CyclicBarrier(nThreads);
             DataProcessor dp = new DataProcessor(requestBodies, dataSourcePath);
 

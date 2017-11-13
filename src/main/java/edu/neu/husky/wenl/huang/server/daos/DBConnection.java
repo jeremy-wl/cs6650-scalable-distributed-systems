@@ -20,7 +20,8 @@ class DBConnection {
             MongoClientOptions.Builder builder = new MongoClientOptions.Builder();
             MongoClientOptions options = builder.connectionsPerHost(CONNECTION_POOL_SIZE).build();
 
-            MongoClient client = new MongoClient(new ServerAddress("34.211.22.38", 27017), options);
+            MongoClient client = new MongoClient(new ServerAddress("localhost", 27017), options);
+//            MongoClient client = new MongoClient(new ServerAddress("34.211.22.38", 27017), options);
             db = client.getDatabase("ski-records");
         }
         return db;

@@ -1,4 +1,4 @@
-package edu.neu.husky.wenl.huang.client.utils;
+package edu.neu.husky.wenl.huang.client.utils.data;
 
 import java.io.*;
 import java.util.*;
