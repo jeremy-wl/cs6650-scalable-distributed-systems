@@ -3,7 +3,7 @@ package edu.neu.husky.wenl.huang.client;
 class Main {
 
 //    static final String DOMAIN = "http://localhost:8080";
-//    static final String DOMAIN = "http://35.162.171.172:8080/cs6650-assignment2";
+//    static final String DOMAIN = "http://52.33.156.1:8080/cs6650-assignment2";
     static final String DOMAIN = "http://first-load-balancer-188437085.us-west-2.elb." +
                                  "amazonaws.com/cs6650-assignment2";
 
