@@ -9,5 +9,9 @@ target
 .DS_Store
 notes.md
 test_results
-Gemfile.lock
 data.bak
+
+Gemfile.lock
+*.log
+.rakeTasks
+src/main/latency-data-consumer/.generators

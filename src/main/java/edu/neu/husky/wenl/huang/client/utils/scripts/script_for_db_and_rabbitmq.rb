@@ -20,8 +20,8 @@ end
 
 def reset_queue(host, queue_name)
   channel = get_queue_channel(host)
-  channel.queue(queue_name).delete
-  channel.queue(queue_name) # Declaring a queue is idempotent
+  channel.queue(queue_name, durable: true).delete
+  channel.queue(queue_name, durable: true) # Declaring a queue is idempotent
 end
 
 def reset_db(db_host, db_name)
