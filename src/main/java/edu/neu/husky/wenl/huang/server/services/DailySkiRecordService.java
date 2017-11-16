@@ -10,6 +10,7 @@ import org.bson.Document;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.net.InetAddress;
 import java.util.*;
 
 @Path("/records")
@@ -30,8 +31,9 @@ public class DailySkiRecordService {
     public String getDailySkiRecord(@DefaultValue("-1") @QueryParam("dayNum")  int dayNum,
                                     @DefaultValue("-1") @QueryParam("skierId") int skierId) {
         int error = 0;
-        long responseStart, dbQueryStart, endTime, responseTime = -1, dbQueryTime = -1;
+        long responseStart, dbQueryStart, responseTime = -1, dbQueryTime = -1;
         String res = null;
+        String hostName = null;
 
         try {
             responseStart = System.currentTimeMillis();
@@ -39,6 +41,8 @@ public class DailySkiRecordService {
             if (dayNum == -1 || skierId == -1) {
                 throw new BadRequestException("You must only pass dayNum and skierId as params here");
             }
+
+            hostName = InetAddress.getLocalHost().getHostName();
 
             dbQueryStart = System.currentTimeMillis();
             Document document = dailySkiRecordDao.get(skierId, dayNum);
@@ -51,8 +55,8 @@ public class DailySkiRecordService {
             error = 1;
         }
         RabbitMQUtils.publish(RoutingKeys.GET,
-                String.format("%d,%d,%d",
-                        responseTime, dbQueryTime, error));
+                String.format("%d,%d,%d,%s,%s",
+                        responseTime, dbQueryTime, error, "GET", hostName));
 
         return res;
     }

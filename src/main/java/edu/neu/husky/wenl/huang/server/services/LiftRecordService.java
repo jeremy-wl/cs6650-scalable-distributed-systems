@@ -38,7 +38,7 @@ public class LiftRecordService {
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/load-lift-records")    // creates a lift record per request
     public Response createLiftRecord(String liftRecordJSON) {
-        long responseStart, dbQueryStart, endTime, responseTime = -1, dbQueryTime = -1;
+        long responseStart, dbQueryStart, responseTime = -1, dbQueryTime = -1;
         int error = 0;
         Response response = null;
         String hostName = null;
@@ -50,21 +50,19 @@ public class LiftRecordService {
             Document liftRecord = Document.parse(liftRecordJSON);
 
             dbQueryStart = System.currentTimeMillis();
-
             liftRecordDao.create(liftRecord);
+            dbQueryTime = System.currentTimeMillis() - dbQueryStart;
+
             response = Response.ok().build();
 
-            endTime = System.currentTimeMillis();
-
-            responseTime = endTime - responseStart;
-            dbQueryTime = endTime - dbQueryStart;
+            responseTime = System.currentTimeMillis() - responseStart;
 
         } catch (Exception e) {
             error = 1;
         }
         RabbitMQUtils.publish(RoutingKeys.POST,
-                              String.format("%d,%d,%d,%s",
-                                            responseTime, dbQueryTime, error, hostName));
+                              String.format("%d,%d,%d,%s,%s",
+                                            responseTime, dbQueryTime, error, "POST", hostName));
 
         return response;
     }
