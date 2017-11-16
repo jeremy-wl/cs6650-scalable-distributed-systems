@@ -13,6 +13,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.net.InetAddress;
 import java.util.*;
 
 @Path("/records")
@@ -40,10 +41,12 @@ public class LiftRecordService {
         long responseStart, dbQueryStart, endTime, responseTime = -1, dbQueryTime = -1;
         int error = 0;
         Response response = null;
+        String hostName = null;
 
         try {
             responseStart = System.currentTimeMillis();
 
+            hostName = InetAddress.getLocalHost().getHostName();
             Document liftRecord = Document.parse(liftRecordJSON);
 
             dbQueryStart = System.currentTimeMillis();
@@ -60,8 +63,8 @@ public class LiftRecordService {
             error = 1;
         }
         RabbitMQUtils.publish(RoutingKeys.POST,
-                              String.format("%d,%d,%d",
-                                            responseTime, dbQueryTime, error));
+                              String.format("%d,%d,%d,%s",
+                                            responseTime, dbQueryTime, error, hostName));
 
         return response;
     }
