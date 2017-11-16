@@ -1,0 +1,5 @@
+{
+  "name": "latency-data-consumer",
+  "private": true,
+  "dependencies": {}
+}
