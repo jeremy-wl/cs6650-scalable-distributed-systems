@@ -7,4 +7,6 @@ class RequestLatency
   field :error, type: Boolean
   field :host_name, type: String
   index({ host_name: 1 }, name: 'host_name_index')
+  index({ error: 1 }, name: 'error_index')
+  index({ req_method: 1 }, name: 'req_method_index')
 end

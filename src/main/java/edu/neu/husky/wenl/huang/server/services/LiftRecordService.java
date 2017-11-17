@@ -38,13 +38,13 @@ public class LiftRecordService {
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/load-lift-records")    // creates a lift record per request
     public Response createLiftRecord(String liftRecordJSON) {
-        long responseStart, dbQueryStart, responseTime = -1, dbQueryTime = -1;
+        long dbQueryStart, responseTime = -1, dbQueryTime = -1;
         int error = 0;
         Response response = null;
         String hostName = null;
 
         try {
-            responseStart = System.currentTimeMillis();
+            long responseStart = System.currentTimeMillis();
 
             hostName = InetAddress.getLocalHost().getHostName();
             Document liftRecord = Document.parse(liftRecordJSON);

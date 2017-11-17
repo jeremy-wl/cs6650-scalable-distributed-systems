@@ -31,12 +31,12 @@ public class DailySkiRecordService {
     public String getDailySkiRecord(@DefaultValue("-1") @QueryParam("dayNum")  int dayNum,
                                     @DefaultValue("-1") @QueryParam("skierId") int skierId) {
         int error = 0;
-        long responseStart, dbQueryStart, responseTime = -1, dbQueryTime = -1;
+        long dbQueryStart, responseTime = -1, dbQueryTime = -1;
         String res = null;
         String hostName = null;
 
         try {
-            responseStart = System.currentTimeMillis();
+            long responseStart = System.currentTimeMillis();
 
             if (dayNum == -1 || skierId == -1) {
                 throw new BadRequestException("You must only pass dayNum and skierId as params here");
