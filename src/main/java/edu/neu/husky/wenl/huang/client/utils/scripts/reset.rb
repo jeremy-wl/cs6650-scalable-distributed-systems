@@ -23,9 +23,9 @@ end
 
 def reset_collections_and_queues(db_host, q_host)
   reset_ski_records_db(db_host)
-  reset_latency_db(db_host)
+  # reset_latency_db(db_host)
   # reset_queue(q_host, 'GET')
   # reset_queue(q_host, 'POST')
 end
 
-reset_collections_and_queues('localhost:27017', 'localhost')
+reset_collections_and_queues('35.162.13.218:27017', 'localhost')

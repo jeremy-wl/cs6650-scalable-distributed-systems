@@ -14,14 +14,15 @@ class DBConnection {
     private static MongoDatabase db;
     private static MongoCollection<Document> liftRecordsCollection;
     private static MongoCollection<Document> dailyRecordsCollection;
+//    private static String MONGODB_HOST = "localhost";
+    private static final String MONGODB_HOST = "35.162.13.218";
 
     private static MongoDatabase getDB() {
         if (db == null) {
             MongoClientOptions.Builder builder = new MongoClientOptions.Builder();
             MongoClientOptions options = builder.connectionsPerHost(CONNECTION_POOL_SIZE).build();
 
-            MongoClient client = new MongoClient(new ServerAddress("localhost", 27017), options);
-//            MongoClient client = new MongoClient(new ServerAddress("34.211.22.38", 27017), options);
+            MongoClient client = new MongoClient(new ServerAddress(MONGODB_HOST, 27017), options);
             db = client.getDatabase("ski-records");
         }
         return db;
