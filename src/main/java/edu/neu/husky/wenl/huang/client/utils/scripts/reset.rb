@@ -28,9 +28,9 @@ def reset_collections_and_queues(db_host_ski, db_host_latency, q_host)
   # reset_queue(q_host, 'POST')
 end
 
-reset_collections_and_queues('localhost:27017',
-                             'localhost:27017',
-                             'localhost')
-# reset_collections_and_queues('35.162.13.218:27017',
-#                              '35.166.195.89',
-#                              '35.166.195.89')
+# reset_collections_and_queues('localhost:27017',
+#                              'localhost:27017',
+#                              'localhost')
+reset_collections_and_queues('35.162.13.218:27017',
+                             '35.166.195.89',
+                             '35.166.195.89')
