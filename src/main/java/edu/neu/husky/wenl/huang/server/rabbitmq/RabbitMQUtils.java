@@ -10,9 +10,12 @@ import java.util.concurrent.*;
 public class RabbitMQUtils {
     private static Channel channel;
     private static Connection connection;
-    private static final String DOMAIN = "localhost";
-    private static final String USERNAME = "guest";
-    private static final String PASSWORD = "guest";
+//    private static final String DOMAIN = "localhost";
+//    private static final String USERNAME = "guest";
+//    private static final String USERNAME = "guest";
+    private static final String DOMAIN = "35.166.195.89";
+    private static final String USERNAME = "admin";
+    private static final String PASSWORD = "admin";
 
     private static Channel getChannel() {
         try {
@@ -21,7 +24,7 @@ public class RabbitMQUtils {
 
                 factory.setHost(DOMAIN);
                 factory.setUsername(USERNAME);
-                factory.setUsername(PASSWORD);
+                factory.setPassword(PASSWORD);
 
                 connection = factory.newConnection();
                 channel = connection.createChannel();

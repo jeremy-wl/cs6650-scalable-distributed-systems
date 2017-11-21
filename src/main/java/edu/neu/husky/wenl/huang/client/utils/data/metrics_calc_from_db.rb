@@ -1,7 +1,7 @@
 require '../scripts/mongo_utils'
 include MongoUtils
 
-db = get_db('localhost:27017', 'latency_data')
+db = get_db('35.166.195.89:27017', 'latency_data')
 
 
 def get_nth_percentile(n, arr)
@@ -21,6 +21,8 @@ db['request_latencies'].find({}).each do |record|
 
   if metrics[host].nil?
     metrics[host] = {
+      num_requests_get: 0,
+      num_requests_post: 0,
       response_latencies_get:  [],
       db_query_latencies_get:  [],
       response_latencies_post: [],
@@ -45,11 +47,13 @@ db['request_latencies'].find({}).each do |record|
   db_query_time = record[:db_query_time]
 
   if request == 'GET'
+    data[:num_requests_get] += 1
     data[:sum_response_latencies_get] += response_time
     data[:sum_db_query_latencies_get] += db_query_time
     data[:response_latencies_get] << response_time
     data[:db_query_latencies_get] << db_query_time
   else # POST
+    data[:num_requests_post] += 1
     data[:sum_response_latencies_post] += response_time
     data[:sum_db_query_latencies_post] += db_query_time
     data[:response_latencies_post] << response_time
@@ -62,7 +66,9 @@ metrics.each do |host, data|
     data[:db_query_latencies_get], data[:db_query_latencies_post],
     data[:response_latencies_get], data[:response_latencies_post]].map(&:sort!)
 
-  puts "======== Metrics for #{host} ==========="
+  puts
+  puts "==== Metrics for #{host} ===="
+  puts
 
   n_get = data[:response_latencies_get].size
   n_post = data[:response_latencies_post].size
@@ -95,6 +101,8 @@ metrics.each do |host, data|
 
   puts
 
-  puts "Number of the errors in GET:  #{data[:num_errors_get]}"
-  puts "Number of the errors in POST: #{data[:num_errors_post]}"
+  puts "Number of GET requests received:  #{data[:num_requests_get]}"
+  puts "Number of POST requests received: #{data[:num_requests_post]}"
+  puts "Number of errors in GET:  #{data[:num_errors_get]}"
+  puts "Number of errors in POST: #{data[:num_errors_post]}"
 end
