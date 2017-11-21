@@ -20,10 +20,10 @@ class ReaderThread extends AbstractThread<int[]> {
         int[] range = requestContent.poll();  // range[0] = ID_START, range[1] = ID_END,
 
         for (int id = range[0]; id <= range[1]; id++) {
-            long startTime = System.currentTimeMillis();
+            long startTime = System.nanoTime();
             String queryString = String.format("skierId=%d&dayNum=%d", id, dayNum);
             doHttpRequest(client, queryString);
-            int latency = (int) (System.currentTimeMillis() - startTime);
+            int latency = (int) (System.nanoTime() - startTime);
             latencies.add(new long[] {startTime, latency});
             System.out.println(String.format("tid: %d, requests sent: %d", Thread.currentThread().getId(), nRequests));
         }

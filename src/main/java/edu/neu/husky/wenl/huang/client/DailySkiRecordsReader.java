@@ -32,7 +32,7 @@ class DailySkiRecordsReader {
             List<Future<int[]>> futures = new ArrayList<>();
 
             float wallTime;
-            long wallTimeStart = System.currentTimeMillis();
+            long wallTimeStart = System.nanoTime();
 
             for (int i = 0; i < nThreads; i++) {
                 Callable<int[]> thread = new ReaderThread(barrier, clientGetSkiRecords, skierIdRanges,
@@ -45,7 +45,7 @@ class DailySkiRecordsReader {
             executor.shutdown();  // stop accepting new jobs
 
             System.out.println("===============================================================");
-            System.out.println("All threads running ...... Time: " + new Date(System.currentTimeMillis()));
+            System.out.println("All threads running ...... Time: " + new Date(System.nanoTime()));
             System.out.println("---------------------------------------------------------------");
 
             int totalRequests = 0, totalResponses = 0;
@@ -63,14 +63,14 @@ class DailySkiRecordsReader {
                 );
             }
 
-            wallTime = System.currentTimeMillis() - wallTimeStart;
+            wallTime = System.nanoTime() - wallTimeStart;
 
             System.out.println("===============================================================");
-            System.out.println("All threads complete ...... Time: " + new Date(System.currentTimeMillis()));
+            System.out.println("All threads complete ...... Time: " + new Date(System.nanoTime()));
             System.out.println("---------------------------------------------------------------");
             System.out.println("Total number of requests sent: " + totalRequests);
             System.out.println("Total number of Successful responses: " + totalResponses);
-            System.out.println(String.format("Test Wall Time: %.3f seconds", wallTime / 1000));
+            System.out.println(String.format("Test Wall Time: %.3f seconds", wallTime / 1_000_000_000));
             System.out.println("===============================================================");
 
             String testResultDir = Main.CLIENT_DIR + "data/test_results/reader/";

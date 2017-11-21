@@ -36,7 +36,7 @@ public class DailySkiRecordService {
         String hostName = null;
 
         try {
-            long responseStart = System.currentTimeMillis();
+            long responseStart = System.nanoTime();
 
             if (dayNum == -1 || skierId == -1) {
                 throw new BadRequestException("You must only pass dayNum and skierId as params here");
@@ -44,12 +44,12 @@ public class DailySkiRecordService {
 
             hostName = InetAddress.getLocalHost().getHostName();
 
-            dbQueryStart = System.currentTimeMillis();
+            dbQueryStart = System.nanoTime();
             Document document = dailySkiRecordDao.get(skierId, dayNum);
-            dbQueryTime = System.currentTimeMillis() - dbQueryStart;
+            dbQueryTime = System.nanoTime() - dbQueryStart;
 
             res = document.toJson();
-            responseTime = System.currentTimeMillis() - responseStart;
+            responseTime = System.nanoTime() - responseStart;
 
         } catch (Exception e) {
             error = 1;

@@ -5,7 +5,7 @@ import java.util.*;
 
 public class DataWriter {
     public static void writeToFile(String dirPath, List<long[]> latencies) {
-        String fileName = String.format("%d_%d.csv", System.currentTimeMillis(), latencies.size());
+        String fileName = String.format("%d_%d.csv", System.nanoTime(), latencies.size());
 
         try (BufferedWriter outputFile = new BufferedWriter(new OutputStreamWriter(
                 new FileOutputStream(dirPath + fileName), "UTF-8"))) {

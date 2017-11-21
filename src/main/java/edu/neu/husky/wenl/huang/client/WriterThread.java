@@ -16,13 +16,13 @@ public class WriterThread extends AbstractThread<String> {
         while (!requestContent.isEmpty()) {
             String requestParam = this.requestContent.poll();
 
-            long startTime = System.currentTimeMillis();
+            long startTime = System.nanoTime();
 
             doHttpRequest(client, requestParam);
 
 //            System.out.println(this.requestParams.size() + " Requests to be sent in the queue");
 
-            int latency = (int) (System.currentTimeMillis() - startTime);
+            int latency = (int) (System.nanoTime() - startTime);
             latencies.add(new long[] {startTime, latency});
 
             if (nRequests % 50 == 0) {

@@ -14,8 +14,8 @@ class DBConnection {
     private static MongoDatabase db;
     private static MongoCollection<Document> liftRecordsCollection;
     private static MongoCollection<Document> dailyRecordsCollection;
-//    private static String MONGODB_HOST = "localhost";
-    private static final String MONGODB_HOST = "35.162.13.218";
+    private static String MONGODB_HOST = "localhost";
+//    private static final String MONGODB_HOST = "35.162.13.218";
 
     private static MongoDatabase getDB() {
         if (db == null) {

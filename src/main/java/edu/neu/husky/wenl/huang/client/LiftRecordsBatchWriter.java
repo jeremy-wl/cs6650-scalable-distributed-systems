@@ -16,10 +16,10 @@ class LiftRecordsBatchWriter {
 
     static void write() {
         float wallTime;
-        long wallTimeStart = System.currentTimeMillis();
+        long wallTimeStart = System.nanoTime();
 
         System.out.println("===============================================================");
-        System.out.println("Parsing CSV records, this may take a while ... " + new Date(System.currentTimeMillis()));
+        System.out.println("Parsing CSV records, this may take a while ... " + new Date(System.nanoTime()));
 
         String json = csvToJSON(DATA_SOURCE);
 
@@ -33,14 +33,14 @@ class LiftRecordsBatchWriter {
         if (res.getStatus() == 200) {
             responses++;
         }
-        wallTime = System.currentTimeMillis() - wallTimeStart;
+        wallTime = System.nanoTime() - wallTimeStart;
 
         System.out.println("===============================================================");
-        System.out.println(String.format("All %d records loaded ... Time: %s", records, new Date(System.currentTimeMillis())));
+        System.out.println(String.format("All %d records loaded ... Time: %s", records, new Date(System.nanoTime())));
         System.out.println("---------------------------------------------------------------");
         System.out.println("Total number of requests sent: " + 1);
         System.out.println("Total number of Successful responses: " + responses);
-        System.out.println(String.format("Test Wall Time: %.3f seconds", wallTime / 1000));
+        System.out.println(String.format("Test Wall Time: %.3f seconds", wallTime / 1_000_000_000));
         System.out.println("===============================================================");
 
     }

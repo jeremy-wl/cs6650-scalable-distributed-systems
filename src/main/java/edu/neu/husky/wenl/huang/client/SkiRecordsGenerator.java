@@ -11,15 +11,15 @@ class SkiRecordsGenerator {
     static void generate(int dayNum) {
         System.out.println("===============================================================");
 
-        long timeStart = System.currentTimeMillis();
+        long timeStart = System.nanoTime();
         System.out.println("Generating daily ski records for all skiers...... Time: "
-                + new Date(System.currentTimeMillis()));
+                + new Date(System.nanoTime()));
 
         HTTPClient clientGenDailySkiRecords = new GetClient(Main.DOMAIN + ENDPOINT_GEN_DAILY_SKI_RECORDS);
         clientGenDailySkiRecords.request("day=" + dayNum);
 
         System.out.println("---------------------------------------------------------------");
-        double timeFinished = (System.currentTimeMillis() - timeStart) / 1000.0;
+        double timeFinished = (System.nanoTime() - timeStart) / 1_000_000_000.0;
         System.out.println(String.format("Finished in %.3f seconds.", timeFinished));
 
         System.out.println("===============================================================");

@@ -32,7 +32,7 @@ if __name__ == '__main__':
     with open('../data/test_results/reader/1509177436101_40000.csv') as fp:
         for line in fp:
             time, latency = line.split(',')
-            time, latency = float(time) / 1000, int(latency)
+            time, latency = float(time) / 1000000000, int(latency)
             pairs.append((time, latency))
 
     pairs_sort_by_time = sorted(pairs, key=lambda p: p[0])

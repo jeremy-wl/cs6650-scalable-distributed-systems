@@ -44,18 +44,18 @@ public class LiftRecordService {
         String hostName = null;
 
         try {
-            long responseStart = System.currentTimeMillis();
+            long responseStart = System.nanoTime();
 
             hostName = InetAddress.getLocalHost().getHostName();
             Document liftRecord = Document.parse(liftRecordJSON);
 
-            dbQueryStart = System.currentTimeMillis();
+            dbQueryStart = System.nanoTime();
             liftRecordDao.create(liftRecord);
-            dbQueryTime = System.currentTimeMillis() - dbQueryStart;
+            dbQueryTime = System.nanoTime() - dbQueryStart;
 
             response = Response.ok().build();
 
-            responseTime = System.currentTimeMillis() - responseStart;
+            responseTime = System.nanoTime() - responseStart;
 
         } catch (Exception e) {
             error = 1;
