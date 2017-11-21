@@ -2,8 +2,8 @@ require '../scripts/mongo_utils'
 include MongoUtils
 
 NANO_SEC_TO_SEC = 1000000000.0
-db = get_db('localhost:27017', 'latency_data')
-# db = get_db('35.166.195.89:27017', 'latency_data')
+# db = get_db('localhost:27017', 'latency_data')
+db = get_db('35.166.195.89:27017', 'latency_data')
 
 
 def get_nth_percentile(n, arr)
@@ -75,31 +75,31 @@ metrics.each do |host, data|
   n_get = data[:response_latencies_get].size
   n_post = data[:response_latencies_post].size
 
-  puts "GET Response mean: #{(data[:sum_db_query_latencies_get] / n_get / NANO_SEC_TO_SEC).round(3)}"
-  puts "GET Response median: #{(get_nth_percentile(50, data[:response_latencies_get]) / NANO_SEC_TO_SEC).round(3)}"
-  puts "GET Response 95th percentile: #{(get_nth_percentile(95, data[:response_latencies_get]) / NANO_SEC_TO_SEC).round(3)}"
-  puts "GET Response 99th percentile: #{(get_nth_percentile(99, data[:response_latencies_get]) / NANO_SEC_TO_SEC).round(3)}"
+  puts "GET Response mean: #{(data[:sum_db_query_latencies_get] / n_get / NANO_SEC_TO_SEC).round(5)}"
+  puts "GET Response median: #{(get_nth_percentile(50, data[:response_latencies_get]) / NANO_SEC_TO_SEC).round(5)}"
+  puts "GET Response 95th percentile: #{(get_nth_percentile(95, data[:response_latencies_get]) / NANO_SEC_TO_SEC).round(5)}"
+  puts "GET Response 99th percentile: #{(get_nth_percentile(99, data[:response_latencies_get]) / NANO_SEC_TO_SEC).round(5)}"
 
   puts
 
-  puts "GET DB query mean: #{(data[:sum_response_latencies_get] / n_get / NANO_SEC_TO_SEC).round(3)}"
-  puts "GET DB query median: #{(get_nth_percentile(50, data[:db_query_latencies_get]) / NANO_SEC_TO_SEC).round(3)}"
-  puts "GET DB query 95th percentile: #{(get_nth_percentile(95, data[:db_query_latencies_get]) / NANO_SEC_TO_SEC).round(3)}"
-  puts "GET DB query 99th percentile: #{(get_nth_percentile(99, data[:db_query_latencies_get]) / NANO_SEC_TO_SEC).round(3)}"
+  puts "GET DB query mean: #{(data[:sum_response_latencies_get] / n_get / NANO_SEC_TO_SEC).round(5)}"
+  puts "GET DB query median: #{(get_nth_percentile(50, data[:db_query_latencies_get]) / NANO_SEC_TO_SEC).round(5)}"
+  puts "GET DB query 95th percentile: #{(get_nth_percentile(95, data[:db_query_latencies_get]) / NANO_SEC_TO_SEC).round(5)}"
+  puts "GET DB query 99th percentile: #{(get_nth_percentile(99, data[:db_query_latencies_get]) / NANO_SEC_TO_SEC).round(5)}"
 
   puts
 
-  puts "POST Response mean: #{(data[:sum_db_query_latencies_post] / n_post / NANO_SEC_TO_SEC).round(3)}"
-  puts "POST Response median: #{(get_nth_percentile(50, data[:response_latencies_post]) / NANO_SEC_TO_SEC).round(3)}"
-  puts "POST Response 95th percentile: #{(get_nth_percentile(95, data[:response_latencies_post]) / NANO_SEC_TO_SEC).round(3)}"
-  puts "POST Response 99th percentile: #{(get_nth_percentile(99, data[:response_latencies_post]) / NANO_SEC_TO_SEC).round(3)}"
+  puts "POST Response mean: #{(data[:sum_db_query_latencies_post] / n_post / NANO_SEC_TO_SEC).round(5)}"
+  puts "POST Response median: #{(get_nth_percentile(50, data[:response_latencies_post]) / NANO_SEC_TO_SEC).round(5)}"
+  puts "POST Response 95th percentile: #{(get_nth_percentile(95, data[:response_latencies_post]) / NANO_SEC_TO_SEC).round(5)}"
+  puts "POST Response 99th percentile: #{(get_nth_percentile(99, data[:response_latencies_post]) / NANO_SEC_TO_SEC).round(5)}"
 
   puts
 
-  puts "POST DB query mean: #{(data[:sum_response_latencies_post] / n_post / NANO_SEC_TO_SEC).round(3)}"
-  puts "POST DB query median: #{(get_nth_percentile(50, data[:db_query_latencies_post]) / NANO_SEC_TO_SEC).round(3)}"
-  puts "POST DB query 95th percentile: #{(get_nth_percentile(95, data[:db_query_latencies_post]) / NANO_SEC_TO_SEC).round(3)}"
-  puts "POST DB query 99th percentile: #{(get_nth_percentile(99, data[:db_query_latencies_post]) / NANO_SEC_TO_SEC).round(3)}"
+  puts "POST DB query mean: #{(data[:sum_response_latencies_post] / n_post / NANO_SEC_TO_SEC).round(5)}"
+  puts "POST DB query median: #{(get_nth_percentile(50, data[:db_query_latencies_post]) / NANO_SEC_TO_SEC).round(5)}"
+  puts "POST DB query 95th percentile: #{(get_nth_percentile(95, data[:db_query_latencies_post]) / NANO_SEC_TO_SEC).round(5)}"
+  puts "POST DB query 99th percentile: #{(get_nth_percentile(99, data[:db_query_latencies_post]) / NANO_SEC_TO_SEC).round(5)}"
 
   puts
 
