@@ -1,0 +1,14 @@
+{
+  "name": "aws-first-lambda",
+  "version": "1.0.0",
+  "description": "skier data processor",
+  "main": "handler.js",
+  "dependencies": {
+    "amqp": "^0.2.6",
+    "amqplib": "^0.5.2"
+  },
+  "devDependencies": {},
+  "scripts": {},
+  "author": "Wenlin Huang",
+  "license": "ISC"
+}
