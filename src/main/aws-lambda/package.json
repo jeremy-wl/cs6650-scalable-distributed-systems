@@ -5,10 +5,16 @@
   "main": "handler.js",
   "dependencies": {
     "amqp": "^0.2.6",
-    "amqplib": "^0.5.2"
+    "amqplib": "^0.5.2",
+    "mongodb": "^2.2.33"
   },
-  "devDependencies": {},
-  "scripts": {},
+  "devDependencies": {
+    "serverless-offline": "^3.16.0"
+  },
+  "scripts": {
+    "start": "./node_modules/.bin/serverless offline -s dev",
+    "debug": "export SLS_DEBUG=* && node --debug ./node_modules/.bin/serverless offline -s dev"
+  },
   "author": "Wenlin Huang",
   "license": "ISC"
 }
