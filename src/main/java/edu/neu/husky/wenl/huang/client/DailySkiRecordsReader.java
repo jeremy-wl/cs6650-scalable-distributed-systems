@@ -8,7 +8,7 @@ import java.util.*;
 import java.util.concurrent.*;
 
 class DailySkiRecordsReader {
-    private static final String ENDPOINT_GET_MY_VERTICALS = "/api/records/myvert";
+    private static final String ENDPOINT_GET_MY_VERTICALS = "/records/myvert";
 
     /**
      * Given n threads, and the range of skier ids (from 1 to X), returns a partitioned list of

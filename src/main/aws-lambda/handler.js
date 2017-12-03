@@ -60,50 +60,54 @@ module.exports.loadLiftRecord = (event, context, callback) => {
 // GET => https://9ozxh6xq36.execute-api.us-west-2.amazonaws.com/dev/records/generate-skier-day-record
 const skierIdRange = 40000
 module.exports.generateSkierDayRecord = (event, context, callback) => {
-  context.callbackWaitsForEmptyEventLoop = false
+  context.callbackWaitsForEmptyEventLoop = false;
 
-  for (let skierId = 1; skierId <= skierIdRange; skierId++) {
-    const day = parseInt(event.queryStringParameters['day']);
+    (function loop(skierId) {
+      const promise = new Promise((resolve, reject) => {
+        const day = parseInt(event.queryStringParameters['day']);
 
-    let liftRides = 0, verticals = 0;
+        let liftRides = 0, verticals = 0;
 
-    connectToDatabase(mongouri, db => {
-      return db.collection('lift-records')
-        .find({skierId: skierId, day: day})
-        .toArray()
-        .then(doc => {
+        connectToDatabase(mongouri, db => {
+          db.collection('lift-records')
+            .find({skierId: skierId, day: day})
+            .toArray()
+            .then(doc => {
 
-          for (let i = 0; i < doc.length; i++) {
-            const liftId = parseInt(doc[i]['liftId'])
-            verticals += getVerticalByLiftId(liftId)
-            liftRides++
-          }
+              for (let i = 0; i < doc.length; i++) {
+                const liftId = parseInt(doc[i]['liftId'])
+                verticals += getVerticalByLiftId(liftId)
+                liftRides++
+              }
 
-          return db
-          // .collection('lift-records')
-            .collection('daily-ski-records')
-            .insertOne({
-              skierId: skierId,
-              day: day,
-              liftRides: liftRides,
-              verticals: verticals
+              return db.collection('daily-ski-records')
+                .insertOne({
+                  skierId: skierId,
+                  day: day,
+                  liftRides: liftRides,
+                  verticals: verticals
+                })
+                .then(() => {
+                  if (skierId === skierIdRange) {
+                    const res = {
+                      statusCode: 200,
+                      body: JSON.stringify({
+                        message: 'Your function executed successfully!',
+                        // input: event,
+                      }),
+                    }
+                    callback(null, res)
+                  }
+                  resolve()
+                })
             })
         })
-    })
-  }
-
-  const res = {
-    statusCode: 200,
-    body: JSON.stringify({
-      message: 'Your function executed successfully!',
-      // input: event,
-    }),
-  }
-
-  callback(null, res)
+      }).then(() => skierId > skierIdRange || loop(skierId+1) )
+    })(1)
 }
 
-// GET => https://9ozxh6xq36.execute-api.us-west-2.amazonaws.com/dev/myvert?dayNum=X&skierId=Y
+
+// GET => https://9ozxh6xq36.execute-api.us-west-2.amazonaws.com/dev/records/myvert?dayNum=X&skierId=Y
 module.exports.getSkierDayRecord = (event, context, callback) => {
   context.callbackWaitsForEmptyEventLoop = false
 
@@ -115,7 +119,7 @@ module.exports.getSkierDayRecord = (event, context, callback) => {
   connectToDatabase(mongouri, db => {
     const dbQueryStart = new Date().getTime()
     const skierId = parseInt(event.queryStringParameters['skierId']);
-    const day = parseInt(event.queryStringParameters['day']);
+    const day = parseInt(event.queryStringParameters['dayNum']);
 
     return db
       .collection('daily-ski-records')

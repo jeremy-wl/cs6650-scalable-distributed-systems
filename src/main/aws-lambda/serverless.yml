@@ -52,7 +52,7 @@ functions:
          method: post
   generate:
     handler: handler.generateSkierDayRecord
-    timeout: 5
+    timeout: 30
     events:
     - http:
          path: records/generate-skier-day-record
