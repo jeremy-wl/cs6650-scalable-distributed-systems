@@ -43,17 +43,23 @@ plugins:
   - serverless-offline
 
 functions:
-  create:
+  load:
     handler: handler.loadLiftRecord
     events:
     - http:
          path: records/load-lift-record
          method: post
-  get:
-    handler: handler.generateDailySkierRecords
+  generate:
+    handler: handler.generateSkierDayRecord
     events:
     - http:
-         path: records/generate-daily-skier-records
+         path: records/generate-skier-day-record
+         method: get
+  get:
+    handler: handler.getSkierDayRecord
+    events:
+    - http:
+         path: myvert
          method: get
 #      - s3: ${env:BUCKET}
 #      - schedule: rate(10 minutes)

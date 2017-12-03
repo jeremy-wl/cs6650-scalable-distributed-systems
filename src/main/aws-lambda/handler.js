@@ -3,15 +3,15 @@
 
 const amqp = require('amqplib/callback_api')
 const quri = 'amqp://admin:admin@34.216.61.206'
-const mongouri = 'mongodb://54.149.160.144:27017/ski-records'
-// const mongouri = 'mongodb://localhost:27017/ski-records'
+// const mongouri = 'mongodb://54.149.160.144:27017/ski-records'
+const mongouri = 'mongodb://localhost:27017/ski-records'
 
 const MongoClient = require('mongodb').MongoClient
 
 let cachedDb = null
 let cachedChannel = null
 
-// POST => https://9ozxh6xq36.execute-api.us-west-2.amazonaws.com/dev/records/load-lift-records
+// POST => https://9ozxh6xq36.execute-api.us-west-2.amazonaws.com/dev/records/load-lift-record
 module.exports.loadLiftRecord = (event, context, callback) => {
   // http://docs.aws.amazon.com/lambda/latest/dg/nodejs-prog-model-context.html#nodejs-prog-model-context-properties
   // https://www.mongodb.com/blog/post/optimizing-aws-lambda-performance-with-mongodb-atlas-and-nodejs
@@ -25,7 +25,7 @@ module.exports.loadLiftRecord = (event, context, callback) => {
   // console.log(cachedDb)
   const data = event.body
 
-  let error = 0;
+  let error = 0; // TODO: promise catch => error++
 
   // TODO: replace nested callbacks with chaining Promises
   connectToDatabase(mongouri, db => {
@@ -58,11 +58,11 @@ module.exports.loadLiftRecord = (event, context, callback) => {
   })
 }
 
-// GET => https://9ozxh6xq36.execute-api.us-west-2.amazonaws.com/dev/records/generate-daily-skier-records
+// GET => https://9ozxh6xq36.execute-api.us-west-2.amazonaws.com/dev/records/generate-skier-day-record
 // invoke this handler locally (with serverless) with care
 // - db connection is not closed, so it will crash db very quickly
 const skierIdRange = 40000
-module.exports.generateDailySkierRecords = (event, context, callback) => {
+module.exports.generateSkierDayRecord = (event, context, callback) => {
   context.callbackWaitsForEmptyEventLoop = false
 
   for (let skierId = 1; skierId <= skierIdRange; skierId++) {
@@ -84,7 +84,7 @@ module.exports.generateDailySkierRecords = (event, context, callback) => {
 
           return db
             // .collection('lift-records')
-            .collection('lift-records-tmp')
+            .collection('daily-ski-records')
             .insertOne({
               skierId: skierId,
               day: day,
@@ -104,6 +104,50 @@ module.exports.generateDailySkierRecords = (event, context, callback) => {
   }
 
   callback(null, res)
+}
+
+// GET => https://9ozxh6xq36.execute-api.us-west-2.amazonaws.com/dev/myvert?dayNum=X&skierId=Y
+module.exports.getSkierDayRecord = (event, context, callback) => {
+  context.callbackWaitsForEmptyEventLoop = false
+
+  const resStart = new Date().getTime()
+
+  let error = 0; // TODO: promise catch => error++
+
+  // TODO: replace nested callbacks with chaining Promises
+  connectToDatabase(mongouri, db => {
+    const dbQueryStart = new Date().getTime()
+    const skierId = parseInt(event.queryStringParameters['skierId']);
+    const day = parseInt(event.queryStringParameters['day']);
+
+    return db
+      .collection('daily-ski-records')
+      .find({skierId: skierId, day: day})
+      .toArray()
+      .then(data => {
+        const dbQueryTime = new Date().getTime() - dbQueryStart
+
+        return getQueueChannel(quri, channel => {
+          const qname = 'GET'
+          const hostName = 'λ'
+          const resTime = new Date().getTime() - resStart
+
+          const qdata = resTime + ',' + dbQueryTime + ',' + error + ',' + qname + ',' + hostName
+          return publishToQueue(channel, qname, qdata, () => {
+            const res = {
+              statusCode: 200,
+              body: JSON.stringify({
+                message: 'Your function executed successfully!',
+                // input: event,
+                data: data
+              }),
+            }
+
+            callback(null, res)
+          })
+        })
+      })
+  })
 }
 
 function getVerticalByLiftId(liftId) {
