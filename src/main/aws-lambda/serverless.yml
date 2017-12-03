@@ -43,12 +43,18 @@ plugins:
   - serverless-offline
 
 functions:
-  hello:
-    handler: handler.load
+  create:
+    handler: handler.loadLiftRecord
     events:
     - http:
-         path: records/load-lift-records
+         path: records/load-lift-record
          method: post
+  get:
+    handler: handler.generateDailySkierRecords
+    events:
+    - http:
+         path: records/generate-daily-skier-records
+         method: get
 #      - s3: ${env:BUCKET}
 #      - schedule: rate(10 minutes)
 #      - sns: greeter-topic
