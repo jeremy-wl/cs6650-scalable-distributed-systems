@@ -10,6 +10,7 @@ const MongoClient = require('mongodb').MongoClient
 let cachedDb = null
 let cachedChannel = null
 
+// POST => https://9ozxh6xq36.execute-api.us-west-2.amazonaws.com/dev/records/load-lift-records
 module.exports.load = (event, context, callback) => {
   // http://docs.aws.amazon.com/lambda/latest/dg/nodejs-prog-model-context.html#nodejs-prog-model-context-properties
   // https://www.mongodb.com/blog/post/optimizing-aws-lambda-performance-with-mongodb-atlas-and-nodejs
@@ -18,30 +19,41 @@ module.exports.load = (event, context, callback) => {
   // function execution timeout) before returning to caller, and the connection can be reused by subsequent calls
   context.callbackWaitsForEmptyEventLoop = false
 
-  const data = event.body
-  console.log(cachedDb)
+  const resStart = new Date().getTime()
 
+  // console.log(cachedDb)
+  const data = event.body
+
+  let error = 0;
+
+  // TODO: replace nested callbacks with chaining Promises
   connectToDatabase(mongouri, db => {
-    db.collection('lift-records')
+    const dbQueryStart = new Date().getTime()
+    return db.collection('lift-records')
       .insertOne(JSON.parse(data))
-      .then(function (doc) {
-        return Promise.resolve()
+      .then(doc => {
+        const dbQueryTime = new Date().getTime() - dbQueryStart
+
+        return getQueueChannel(quri, channel => {
+          const qname = 'POST'
+          const hostName = 'λ'
+          const resTime = new Date().getTime() - resStart
+
+          const qdata = resTime + ',' + dbQueryTime + ',' + error + ',' + qname + ',' + hostName
+          return publishToQueue(channel, qname, qdata, () => {
+            const res = {
+              statusCode: 200,
+              body: JSON.stringify({
+                message: 'Your function executed successfully!',
+                // input: event,
+              }),
+            }
+
+            callback(null, res)
+          })
+        })
       })
   })
-
-  getQueueChannel(quri, channel => {
-    publishToQueue(channel, 'GET', data)
-  })
-
-  const response = {
-    statusCode: 200,
-    body: JSON.stringify({
-      message: 'Go Serverless v1.0! Your function executed successfully!',
-      // input: event,
-    }),
-  }
-
-  callback(null, response)
 }
 
 function connectToDatabase(uri, callback) {
@@ -57,9 +69,9 @@ function connectToDatabase(uri, callback) {
     })
 }
 
-function publishToQueue(channel, qname, message) {
+function publishToQueue(channel, qname, message, callback) {
   channel.assertQueue(qname, {durable: true})
-  channel.sendToQueue(qname, new Buffer(message))
+  channel.sendToQueue(qname, new Buffer(message), {}, callback)
 }
 
 function getQueueChannel(uri, callback) {
@@ -68,8 +80,8 @@ function getQueueChannel(uri, callback) {
     return Promise.resolve(cachedChannel);
   }
 
-  return amqp.connect(uri, function(err, conn) {
-    return conn.createConfirmChannel(function(err, channel) {
+  return amqp.connect(uri, (err, conn) => {
+    return conn.createConfirmChannel((err, channel) => {
       cachedChannel = channel
       return callback(channel)
     })
