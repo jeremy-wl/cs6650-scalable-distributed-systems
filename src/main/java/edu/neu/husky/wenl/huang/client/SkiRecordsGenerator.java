@@ -6,7 +6,8 @@ import edu.neu.husky.wenl.huang.client.http.HTTPClient;
 import java.util.*;
 
 class SkiRecordsGenerator {
-    private static final String ENDPOINT_GEN_DAILY_SKI_RECORDS = "/api/records/generate-daily-ski-records";
+    private static final String ENDPOINT_GEN_DAILY_SKI_RECORDS = "/records/generate-skier-day-record";
+
 
     static void generate(int dayNum) {
         System.out.println("===============================================================");

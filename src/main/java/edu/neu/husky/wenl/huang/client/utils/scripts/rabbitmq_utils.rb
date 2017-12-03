@@ -2,7 +2,7 @@ require 'bunny'
 
 module RabbitmqUtils
   def get_queue_channel(host)
-    conn = Bunny.new(hostname: host)
+    conn = Bunny.new(hostname: host, username: 'admin', password: 'admin')
     conn.start
     conn.create_channel
   end

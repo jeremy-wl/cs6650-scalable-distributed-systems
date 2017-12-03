@@ -36,7 +36,7 @@ public class LiftRecordService {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    @Path("/load-lift-records")    // creates a lift record per request
+    @Path("/load-lift-record")    // creates a lift record per request
     public Response createLiftRecord(String liftRecordJSON) {
         long dbQueryStart, responseTime = -1, dbQueryTime = -1;
         int error = 0;

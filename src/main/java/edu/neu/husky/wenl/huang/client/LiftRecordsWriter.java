@@ -9,13 +9,13 @@ import java.util.concurrent.*;
 
 class LiftRecordsWriter {
 
-    private static final String ENDPOINT_LOAD_LIFT_RECORDS = "/api/records/load-lift-records";
+    private static final String ENDPOINT_LOAD_LIFT_RECORDS = "/records/load-lift-record";
 
     static void write(int nThreads) {
         try {
             BlockingQueue<String> requestBodies = new LinkedBlockingDeque<>();
 
-            String dataSourcePath = Main.CLIENT_DIR + "data/data_day999_60k.csv";
+            String dataSourcePath = Main.CLIENT_DIR + "data/data_day1_3k.csv";
             CyclicBarrier barrier = new CyclicBarrier(nThreads);
             DataProcessor dp = new DataProcessor(requestBodies, dataSourcePath);
 

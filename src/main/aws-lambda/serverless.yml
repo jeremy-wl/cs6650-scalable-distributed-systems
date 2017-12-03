@@ -45,21 +45,24 @@ plugins:
 functions:
   load:
     handler: handler.loadLiftRecord
+    timeout: 5
     events:
     - http:
          path: records/load-lift-record
          method: post
   generate:
     handler: handler.generateSkierDayRecord
+    timeout: 5
     events:
     - http:
          path: records/generate-skier-day-record
          method: get
   get:
     handler: handler.getSkierDayRecord
+    timeout: 5
     events:
     - http:
-         path: myvert
+         path: records/myvert
          method: get
 #      - s3: ${env:BUCKET}
 #      - schedule: rate(10 minutes)

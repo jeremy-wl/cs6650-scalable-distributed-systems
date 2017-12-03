@@ -3,8 +3,8 @@
 
 const amqp = require('amqplib/callback_api')
 const quri = 'amqp://admin:admin@34.216.61.206'
-// const mongouri = 'mongodb://54.149.160.144:27017/ski-records'
-const mongouri = 'mongodb://localhost:27017/ski-records'
+const mongouri = 'mongodb://54.149.160.144:27017/ski-records'
+// const mongouri = 'mongodb://localhost:27017/ski-records'
 
 const MongoClient = require('mongodb').MongoClient
 

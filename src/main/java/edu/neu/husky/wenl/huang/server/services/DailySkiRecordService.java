@@ -62,7 +62,7 @@ public class DailySkiRecordService {
     }
 
     @GET
-    @Path("/generate-daily-ski-records")
+    @Path("/generate-skier-day-record")
     public Response generateDailySkiRecords(@DefaultValue("-1") @QueryParam("day") int day) {
         if (day == -1) {
             throw new BadRequestException("You must only pass valid day num as params here");
