@@ -8,9 +8,6 @@ const mongouri = 'mongodb://54.149.160.144:27017/ski-records'
 
 const MongoClient = require('mongodb').MongoClient
 
-let cachedDb = null
-let cachedChannel = null
-
 // POST => https://9ozxh6xq36.execute-api.us-west-2.amazonaws.com/dev/records/load-lift-record
 module.exports.loadLiftRecord = (event, context, callback) => {
   // http://docs.aws.amazon.com/lambda/latest/dg/nodejs-prog-model-context.html#nodejs-prog-model-context-properties
@@ -34,9 +31,10 @@ module.exports.loadLiftRecord = (event, context, callback) => {
       .collection('lift-records')
       .insertOne(JSON.parse(data))
       .then(() => {
+        db.close()
         const dbQueryTime = new Date().getTime() - dbQueryStart
 
-        return getQueueChannel(quri, channel => {
+        return getQueueChannel(quri, (channel, conn) => {
           const qname = 'POST'
           const hostName = 'λ'
           const resTime = new Date().getTime() - resStart
@@ -51,6 +49,7 @@ module.exports.loadLiftRecord = (event, context, callback) => {
               }),
             }
 
+            conn.close()
             callback(null, res)
           })
         })
@@ -59,8 +58,6 @@ module.exports.loadLiftRecord = (event, context, callback) => {
 }
 
 // GET => https://9ozxh6xq36.execute-api.us-west-2.amazonaws.com/dev/records/generate-skier-day-record
-// invoke this handler locally (with serverless) with care
-// - db connection is not closed, so it will crash db very quickly
 const skierIdRange = 40000
 module.exports.generateSkierDayRecord = (event, context, callback) => {
   context.callbackWaitsForEmptyEventLoop = false
@@ -83,7 +80,7 @@ module.exports.generateSkierDayRecord = (event, context, callback) => {
           }
 
           return db
-            // .collection('lift-records')
+          // .collection('lift-records')
             .collection('daily-ski-records')
             .insertOne({
               skierId: skierId,
@@ -159,16 +156,8 @@ function getVerticalByLiftId(liftId) {
 }
 
 function connectToDatabase(uri, callback) {
-  if (cachedDb && cachedDb.serverConfig.isConnected()) {
-    console.log('=> using cached database instance');
-    return Promise.resolve(cachedDb);
-  }
-
   return MongoClient
-    .connect(uri, (err, db) => {
-      cachedDb = db
-      return callback(cachedDb)
-    })
+    .connect(uri, (err, db) => { return callback(db) })
 }
 
 function publishToQueue(channel, qname, message, callback) {
@@ -177,15 +166,9 @@ function publishToQueue(channel, qname, message, callback) {
 }
 
 function getQueueChannel(uri, callback) {
-  if (cachedChannel) {
-    console.log('=> using cached q instance');
-    return Promise.resolve(cachedChannel);
-  }
-
   return amqp.connect(uri, (err, conn) => {
     return conn.createConfirmChannel((err, channel) => {
-      cachedChannel = channel
-      return callback(channel)
+      return callback(channel, conn)
     })
   })
 }
