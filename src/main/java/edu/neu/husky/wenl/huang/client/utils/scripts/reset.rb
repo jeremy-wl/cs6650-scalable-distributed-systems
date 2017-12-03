@@ -14,11 +14,11 @@ def reset_ski_records_db(db_host)
   db.drop
 
   db['lift-records'].indexes.create_many(
-    [{ key: { skierId: 1 }, unique: true },
+    [{ key: { skierId: 1 } },
      { key: { day: 1 } }]
   )
   db['daily-ski-records'].indexes.create_many(
-    [{ key: { skierId: 1 }, unique: true },
+    [{ key: { skierId: 1 } },
      { key: { day: 1 } }]
   )
 end

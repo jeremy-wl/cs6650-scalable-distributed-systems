@@ -15,7 +15,7 @@ class LiftRecordsWriter {
         try {
             BlockingQueue<String> requestBodies = new LinkedBlockingDeque<>();
 
-            String dataSourcePath = Main.CLIENT_DIR + "data/data_day1_3k.csv";
+            String dataSourcePath = Main.CLIENT_DIR + "data/data_day999_60k.csv";
             CyclicBarrier barrier = new CyclicBarrier(nThreads);
             DataProcessor dp = new DataProcessor(requestBodies, dataSourcePath);
 

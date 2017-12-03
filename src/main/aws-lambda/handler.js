@@ -30,8 +30,8 @@ module.exports.loadLiftRecord = (event, context, callback) => {
     return db
       .collection('lift-records')
       .insertOne(JSON.parse(data))
-      .then(() => {
-        db.close()
+      .then(() => {  // TODO: should not open and close connections for each request, this slows
+        db.close()   //       down performance dramatically
         const dbQueryTime = new Date().getTime() - dbQueryStart
 
         return getQueueChannel(quri, (channel, conn) => {
@@ -49,7 +49,7 @@ module.exports.loadLiftRecord = (event, context, callback) => {
               }),
             }
 
-            conn.close()
+            conn.close()  // TODO
             callback(null, res)
           })
         })
