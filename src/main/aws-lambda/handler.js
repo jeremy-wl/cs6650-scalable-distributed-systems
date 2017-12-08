@@ -62,6 +62,11 @@ module.exports.generateSkierDayRecord = (event, context, callback) => {
   context.callbackWaitsForEmptyEventLoop = false;
   const queryDay = parseInt(event.queryStringParameters['dayNum']);
 
+  /*
+  out: https://docs.mongodb.com/v3.4/reference/operator/aggregation/out/
+  aggregation: https://docs.mongodb.com/v3.2/aggregation/
+   */
+
   function aggregateSkierVerts(db){
     db.collection('lift-records')
       .aggregate(
