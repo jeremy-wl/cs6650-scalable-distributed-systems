@@ -6,7 +6,8 @@
   "dependencies": {
     "amqp": "^0.2.6",
     "amqplib": "^0.5.2",
-    "mongodb": "^2.2.33"
+    "mongodb": "^2.2.33",
+    "serverless-offline": "^3.16.0"
   },
   "devDependencies": {
     "serverless-offline": "^3.16.0"
