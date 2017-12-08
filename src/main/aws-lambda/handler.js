@@ -61,19 +61,21 @@ module.exports.loadLiftRecord = (event, context, callback) => {
 const skierIdRange = 40000
 module.exports.generateSkierDayRecord = (event, context, callback) => {
   context.callbackWaitsForEmptyEventLoop = false;
+  const day = parseInt(event.queryStringParameters['dayNum']);
 
   let dailySkiRecords = {};
   let mapReduceContext = {lastSkierId: 1,
-                          batchSize: 500};
+                          batchSize: 50,
+                          workerCount: 30,
+                          finished: 0 };
 
-  let reducer = (db) => {
+  let reducer = (collection) => {
     let dailySkiDocuments = [];
     for (let skierId in dailySkiRecords) {
       dailySkiDocuments.push(dailySkiRecords[skierId]);
     }
 
-    db.collection('daily-ski-records')
-      .insertMany(dailySkiDocuments)
+    collection.insertMany(dailySkiDocuments)
       .then(
         () => {
           const res = {
@@ -87,44 +89,49 @@ module.exports.generateSkierDayRecord = (event, context, callback) => {
       )
   };
 
-  function mapper(db) {
-    let day = parseInt(event.queryStringParameters['dayNum']);
-    for(;mapReduceContext.lastSkierId< skierIdRange;mapReduceContext.lastSkierId += mapReduceContext.batchSize) {
-      console.log(mapReduceContext.lastSkierId);
-      db.collection('lift-records')
-        .find({'skierId': {'$ge': mapReduceContext.lastSkierId,
-                            '$lt': mapReduceContext.lastSkierId + mapReduceContext.batchSize}, day: day})
-        .toArray()
-        .then(
-          (docs) =>{
-            console.log("finished",skierId);
-            for (doc of docs) {
-              let skierId = parseInt(doc['skierId']);
-              let height = getVerticalByLiftId(parseInt(doc['liftId']));
-              if (!(skierid in dailySkiRecords)) {
-                dailySkiRecords[skierid] = {
-                    skierId: skierId,
-                    day: day,
-                    liftRides: 0,
-                    verticals: 0
-                }
-              }
-              dailySkiRecords[skierId].verticals += height;
-              dailySkiRecords[skierId].liftRides += 1;
-            }
-          }
-        );
-      break;
+  function mapper(collection) {
+    if (mapReduceContext.lastSkierId >= skierIdRange){
+      mapReduceContext.finished += 1;
+      if (mapReduceContext.finished === mapReduceContext.workerCount){
+        reducer(collection);
+      }
+      return;
     }
 
-    reducer(db);
+    console.log(mapReduceContext.lastSkierId);
+    collection.find({skierId: {'$ge': mapReduceContext.lastSkierId,
+                          '$lt': mapReduceContext.lastSkierId + mapReduceContext.batchSize},
+                      day: day})
+      .toArray()
+      .then(
+        (docs) =>{
+          for (doc of docs) {
+            let skierId = parseInt(doc['skierId']);
+            let height = getVerticalByLiftId(parseInt(doc['liftId']));
+            if (!(skierid in dailySkiRecords)) {
+              dailySkiRecords[skierid] = {
+                  skierId: skierId,
+                  day: day,
+                  liftRides: 0,
+                  verticals: 0
+              }
+            }
+            dailySkiRecords[skierId].verticals += height;
+            dailySkiRecords[skierId].liftRides += 1;
+          }
+
+          mapper(collection);
+        }
+      );
   }
 
-  function mapReduce(db) {
-    mapper(db);
+  function mapReduce(collection) {
+    for(let i=0;i<mapReduceContext.workerCount;i++) {
+      mapper(collection);
+    }
   }
 
-  connectToDatabase(mongouri, db => { mapReduce(db) });
+  connectToDatabase(mongouri, db => { mapReduce(db.collection('lift-records')) });
 };
 
 
