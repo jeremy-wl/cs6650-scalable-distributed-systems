@@ -1,0 +1,41 @@
+current directory: /Users/ChienliMa/Code/cs6650-scalable-distributed-systems/src/main/java/edu/neu/husky/wenl/huang/client/utils/scripts/nclude-dependencies/gems/bson-4.2.2/ext/bson
+/usr/local/opt/ruby/bin/ruby -r ./siteconf20171208-20098-1uq744r.rb extconf.rb
+creating Makefile
+
+current directory: /Users/ChienliMa/Code/cs6650-scalable-distributed-systems/src/main/java/edu/neu/husky/wenl/huang/client/utils/scripts/nclude-dependencies/gems/bson-4.2.2/ext/bson
+make "DESTDIR=" clean
+
+current directory: /Users/ChienliMa/Code/cs6650-scalable-distributed-systems/src/main/java/edu/neu/husky/wenl/huang/client/utils/scripts/nclude-dependencies/gems/bson-4.2.2/ext/bson
+make "DESTDIR="
+compiling bson_native.c
+bson_native.c:215:27: warning: implicit conversion loses integer precision: 'long' to 'uint32_t' (aka 'unsigned int') [-Wshorten-64-to-32]
+  const uint32_t length = FIX2LONG(i);
+                 ~~~~~~   ^~~~~~~~~~~
+/usr/local/Cellar/ruby/2.3.1/include/ruby-2.3.0/ruby/ruby.h:386:21: note: expanded from macro 'FIX2LONG'
+#define FIX2LONG(x) RB_FIX2LONG(x)
+                    ^~~~~~~~~~~~~~
+/usr/local/Cellar/ruby/2.3.1/include/ruby-2.3.0/ruby/ruby.h:370:25: note: expanded from macro 'RB_FIX2LONG'
+#define RB_FIX2LONG(x) ((long)RSHIFT((SIGNED_VALUE)(x),1))
+                        ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+bson_native.c:451:46: warning: implicit conversion loses integer precision: 'long' to 'int32_t' (aka 'int') [-Wshorten-64-to-32]
+  const int32_t length = RSTRING_LEN(string) + 1;
+                ~~~~~~   ~~~~~~~~~~~~~~~~~~~~^~~
+bson_native.c:484:28: warning: implicit conversion loses integer precision: 'long' to 'int32_t' (aka 'int') [-Wshorten-64-to-32]
+  const int32_t position = NUM2LONG(index);
+                ~~~~~~~~   ^~~~~~~~~~~~~~~
+/usr/local/Cellar/ruby/2.3.1/include/ruby-2.3.0/ruby/ruby.h:669:21: note: expanded from macro 'NUM2LONG'
+#define NUM2LONG(x) RB_NUM2LONG(x)
+                    ^~~~~~~~~~~~~~
+/usr/local/Cellar/ruby/2.3.1/include/ruby-2.3.0/ruby/ruby.h:668:24: note: expanded from macro 'RB_NUM2LONG'
+#define RB_NUM2LONG(x) rb_num2long_inline(x)
+                       ^~~~~~~~~~~~~~~~~~~~~
+In file included from bson_native.c:21:
+./native-endian.h:196:15: warning: unused function '__bson_double_swap_slow' [-Wunused-function]
+static double __bson_double_swap_slow(double v)
+              ^
+4 warnings generated.
+linking shared-object bson_native.bundle
+
+current directory: /Users/ChienliMa/Code/cs6650-scalable-distributed-systems/src/main/java/edu/neu/husky/wenl/huang/client/utils/scripts/nclude-dependencies/gems/bson-4.2.2/ext/bson
+make "DESTDIR=" install
+/usr/bin/install -c -m 0755 bson_native.bundle ./.gem.20171208-20098-19jh97a

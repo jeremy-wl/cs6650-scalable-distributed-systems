@@ -58,80 +58,78 @@ module.exports.loadLiftRecord = (event, context, callback) => {
 }
 
 // GET => https://9ozxh6xq36.execute-api.us-west-2.amazonaws.com/dev/records/generate-skier-day-record
-const skierIdRange = 40000
 module.exports.generateSkierDayRecord = (event, context, callback) => {
   context.callbackWaitsForEmptyEventLoop = false;
-  const day = parseInt(event.queryStringParameters['dayNum']);
+  const queryDay = parseInt(event.queryStringParameters['dayNum']);
 
-  let dailySkiRecords = {};
-  let mapReduceContext = {lastSkierId: 1,
-                          batchSize: 50,
-                          workerCount: 30,
-                          finished: 0 };
-
-  let reducer = (collection) => {
-    let dailySkiDocuments = [];
-    for (let skierId in dailySkiRecords) {
-      dailySkiDocuments.push(dailySkiRecords[skierId]);
-    }
-
-    collection.insertMany(dailySkiDocuments)
-      .then(
-        () => {
-          const res = {
-            statusCode: 200,
-            body: JSON.stringify({
-              message: 'Your function executed successfully!',
-            })
-          };
-          callback(null, res);
-        }
-      )
-  };
-
-  function mapper(collection) {
-    if (mapReduceContext.lastSkierId >= skierIdRange){
-      mapReduceContext.finished += 1;
-      if (mapReduceContext.finished === mapReduceContext.workerCount){
-        reducer(collection);
-      }
-      return;
-    }
-
-    console.log(mapReduceContext.lastSkierId);
-    collection.find({skierId: {'$ge': mapReduceContext.lastSkierId,
-                          '$lt': mapReduceContext.lastSkierId + mapReduceContext.batchSize},
-                      day: day})
-      .toArray()
-      .then(
-        (docs) =>{
-          for (doc of docs) {
-            let skierId = parseInt(doc['skierId']);
-            let height = getVerticalByLiftId(parseInt(doc['liftId']));
-            if (!(skierid in dailySkiRecords)) {
-              dailySkiRecords[skierid] = {
-                  skierId: skierId,
-                  day: day,
-                  liftRides: 0,
-                  verticals: 0
-              }
+  function aggregateSkierVerts(db){
+    db.collection('lift-records')
+      .aggregate(
+        [
+          {
+            $group: {
+              _id : {
+                skierId: "$skierId",
+                day: queryDay
+              },
+              skierId: "$skierId",
+              day: queryDay,
+              liftRides : { $sum: 1 },
+              verticals :
+                {
+                  $sum: {
+                    $switch: {
+                      branches: [
+                        {
+                          case: {$and: [{$gte: ["liftId", 1]}, {$lte: ["liftId", 10]}]},
+                          then: 200
+                        },
+                        {
+                          case: {$and: [{$gte: ["liftId", 11]}, {$lte: ["liftId", 20]}]},
+                          then: 300
+                        },
+                        {
+                          case: {$and: [{$gte: ["liftId", 21]}, {$lte: ["liftId", 30]}]},
+                          then: 400
+                        },
+                        {
+                          case: {$and: [{$gte: ["liftId", 31]}, {$lte: ["liftId", 40]}]},
+                          then: 500
+                        },
+                      ],
+                      default: "Did not match"
+                    }
+                  }
+                }
             }
-            dailySkiRecords[skierId].verticals += height;
-            dailySkiRecords[skierId].liftRides += 1;
+          },
+
+          {
+            $project : {
+              _id : 0,
+              skierId : 1,
+              day : 1,
+              liftRides : 1,
+              verticals : 1}
+          },
+
+          {
+            $out: "daily-ski-records"
           }
-
-          mapper(collection);
-        }
+        ]
       );
+    const res = {
+      statusCode: 200,
+      body: JSON.stringify({
+        message: 'Your function executed successfully!',
+        // input: event,
+      }),
+    };
+
+    callback(null, res)
   }
 
-  function mapReduce(collection) {
-    for(let i=0;i<mapReduceContext.workerCount;i++) {
-      mapper(collection);
-    }
-  }
-
-  connectToDatabase(mongouri, db => { mapReduce(db.collection('lift-records')) });
+  connectToDatabase(mongouri, db => { aggregateSkierVerts(db) });
 };
 
 
