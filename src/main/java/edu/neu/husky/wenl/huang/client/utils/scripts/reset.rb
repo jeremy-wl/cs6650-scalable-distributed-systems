@@ -23,6 +23,12 @@ def reset_ski_records_db(db_host)
   )
 end
 
+def drop_daily_ski_records(db_host)
+  db = get_db(db_host, 'ski-records')
+  db['daily-ski-records'].drop
+  p 'Dropped daily-ski-records'
+end
+
 def reset_latency_db(db_host)
   get_db(db_host, 'latency_data').drop
 end
@@ -37,6 +43,7 @@ end
 # reset_collections_and_queues('localhost:27017',
 #                              'localhost:27017',
 #                              'localhost')
-reset_collections_and_queues('54.149.160.144:27017',
-                             '34.216.61.206',
-                             '34.216.61.206')
+# reset_collections_and_queues('54.149.160.144:27017',
+#                              '34.216.61.206',
+#                              '34.216.61.206')
+drop_daily_ski_records('34.216.159.222:27017')

@@ -3,8 +3,8 @@
 
 const amqp = require('amqplib/callback_api')
 const quri = 'amqp://admin:admin@34.216.61.206'
-const mongouri = 'mongodb://54.149.160.144:27017/ski-records'
-// const mongouri = 'mongodb://localhost:27017/ski-records'
+// const mongouri = 'mongodb://34.216.159.222:27017/ski-records'
+const mongouri = 'mongodb://localhost:27017/ski-records'
 
 const MongoClient = require('mongodb').MongoClient
 
@@ -32,7 +32,7 @@ module.exports.loadLiftRecord = (event, context, callback) => {
       .insertOne(JSON.parse(data))
       .then(() => {  // TODO: should not open and close connections for each request, this slows
         db.close()   //       down performance dramatically
-        const dbQueryTime = new Date().getTime() - dbQueryStart
+        const dbQueryTime = new Date().getTime() - dbQueryStart;
 
         return getQueueChannel(quri, (channel, conn) => {
           const qname = 'POST'
@@ -58,53 +58,95 @@ module.exports.loadLiftRecord = (event, context, callback) => {
 }
 
 // GET => https://9ozxh6xq36.execute-api.us-west-2.amazonaws.com/dev/records/generate-skier-day-record
-const skierIdRange = 40000
 module.exports.generateSkierDayRecord = (event, context, callback) => {
   context.callbackWaitsForEmptyEventLoop = false;
+  const queryDay = parseInt(event.queryStringParameters['dayNum']);
 
-    (function loop(skierId) {
-      const promise = new Promise((resolve, reject) => {
-        const day = parseInt(event.queryStringParameters['day']);
-
-        let liftRides = 0, verticals = 0;
-
-        connectToDatabase(mongouri, db => {
-          db.collection('lift-records')
-            .find({skierId: skierId, day: day})
-            .toArray()
-            .then(doc => {
-
-              for (let i = 0; i < doc.length; i++) {
-                const liftId = parseInt(doc[i]['liftId'])
-                verticals += getVerticalByLiftId(liftId)
-                liftRides++
-              }
-
-              return db.collection('daily-ski-records')
-                .insertOne({
-                  skierId: skierId,
-                  day: day,
-                  liftRides: liftRides,
-                  verticals: verticals
-                })
-                .then(() => {
-                  if (skierId === skierIdRange) {
-                    const res = {
-                      statusCode: 200,
-                      body: JSON.stringify({
-                        message: 'Your function executed successfully!',
-                        // input: event,
-                      }),
+  function aggregateSkierVerticalsByDay(db) {
+    let cursor = db.collection('lift-records')
+      .aggregate(
+        [
+          {                             // Filters the docs to pass only the ones that match
+            $match : { day : queryDay } // the specified condition(s) to the next pipeline stage.
+          },
+          {
+            $group: {
+              _id : {skierId: "$skierId", day: "$day"},
+              liftRides : { $sum: 1 },
+              verticals : {
+                  $sum: {
+                    $switch: {
+                      branches: [
+                        {
+                          case: {$and: [{$gte: ["$liftId", 1]}, {$lte: ["$liftId", 10]}]},
+                          then: 200
+                        },
+                        {
+                          case: {$and: [{$gte: ["$liftId", 11]}, {$lte: ["$liftId", 20]}]},
+                          then: 300
+                        },
+                        {
+                          case: {$and: [{$gte: ["$liftId", 21]}, {$lte: ["$liftId", 30]}]},
+                          then: 400
+                        },
+                        {
+                          case: {$and: [{$gte: ["$liftId", 31]}, {$lte: ["$liftId", 40]}]},
+                          then: 500
+                        },
+                      ],
+                      default: 0
                     }
-                    callback(null, res)
                   }
-                  resolve()
-                })
-            })
-        })
-      }).then(() => skierId > skierIdRange || loop(skierId+1) )
-    })(1)
-}
+                }
+            }
+          },
+          {
+            $project : {
+              _id : 0,
+              skierId : "$_id.skierId",
+              day : "$_id.day",
+              liftRides : 1,
+              verticals : 1}
+          },
+          {
+            $out: "daily-ski-records"
+          }
+        ],
+        {
+          allowDiskUse:true
+        }
+      );
+
+
+    cursor.toArray().then(
+      docs =>{
+        console.log(docs);
+        const res = {
+          statusCode: 200,
+          body: JSON.stringify({
+            message: 'Your function executed successfully!',
+            // input: event,
+          }),
+        };
+
+        callback(null, res)
+      },
+      err => {
+        const res = {
+          statusCode: 500,
+          body: JSON.stringify({
+            message: err,
+            // input: event,
+          }),
+        };
+
+        callback(null, res)
+      }
+    )
+  }// aggregateSkierVerticalsByDay
+
+  connectToDatabase(mongouri, db => { aggregateSkierVerticalsByDay(db) });
+};
 
 
 // GET => https://9ozxh6xq36.execute-api.us-west-2.amazonaws.com/dev/records/myvert?dayNum=X&skierId=Y
@@ -112,7 +154,6 @@ module.exports.getSkierDayRecord = (event, context, callback) => {
   context.callbackWaitsForEmptyEventLoop = false
 
   const resStart = new Date().getTime()
-
   let error = 0; // TODO: promise catch => error++
 
   // TODO: replace nested callbacks with chaining Promises
@@ -149,14 +190,6 @@ module.exports.getSkierDayRecord = (event, context, callback) => {
         })
       })
   })
-}
-
-function getVerticalByLiftId(liftId) {
-  if (liftId >= 1  && liftId <= 10)  return 200;
-  if (liftId >= 11 && liftId <= 20)  return 300;
-  if (liftId >= 21 && liftId <= 30)  return 400;
-  if (liftId >= 31 && liftId <= 40)  return 500;
-  return -1;
 }
 
 function connectToDatabase(uri, callback) {

@@ -20,7 +20,7 @@ class Main {
     public static void main(String[] args) {
         LiftRecordsWriter.write(N_THREADS_WRITER); // This one sends all records with n threads
 //        LiftRecordsBatchWriter.write();            // This one send all records in bulk in 1 request, 10x faster
-//        SkiRecordsGenerator.generate(DAY_NUM);
+        SkiRecordsGenerator.generate(DAY_NUM);
 //        DailySkiRecordsReader.read(N_THREADS_READER, DAY_NUM, SKIER_ID_RANGE);
     }
 }
