@@ -62,23 +62,16 @@ module.exports.generateSkierDayRecord = (event, context, callback) => {
   context.callbackWaitsForEmptyEventLoop = false;
   const queryDay = parseInt(event.queryStringParameters['dayNum']);
 
-  /*
-  out: https://docs.mongodb.com/v3.4/reference/operator/aggregation/out/
-  aggregation: https://docs.mongodb.com/v3.2/aggregation/
-   */
-
-  function aggregateSkierVerts(db){
-    db.collection('lift-records')
+  function aggregateSkierVertsByDay(db){
+    let cursor = db.collection('lift-records')
       .aggregate(
         [
           {
+            $match : { day : queryDay }
+          },
+          {
             $group: {
-              _id : {
-                skierId: "$skierId",
-                day: queryDay
-              },
-              skierId: "$skierId",
-              day: queryDay,
+              _id : {skierId:"$skierId", day:"$day"},
               liftRides : { $sum: 1 },
               verticals :
                 {
@@ -86,55 +79,75 @@ module.exports.generateSkierDayRecord = (event, context, callback) => {
                     $switch: {
                       branches: [
                         {
-                          case: {$and: [{$gte: ["liftId", 1]}, {$lte: ["liftId", 10]}]},
+                          case: {$and: [{$gte: ["$liftId", 1]}, {$lte: ["$liftId", 10]}]},
                           then: 200
                         },
                         {
-                          case: {$and: [{$gte: ["liftId", 11]}, {$lte: ["liftId", 20]}]},
+                          case: {$and: [{$gte: ["$liftId", 11]}, {$lte: ["$liftId", 20]}]},
                           then: 300
                         },
                         {
-                          case: {$and: [{$gte: ["liftId", 21]}, {$lte: ["liftId", 30]}]},
+                          case: {$and: [{$gte: ["$liftId", 21]}, {$lte: ["$liftId", 30]}]},
                           then: 400
                         },
                         {
-                          case: {$and: [{$gte: ["liftId", 31]}, {$lte: ["liftId", 40]}]},
+                          case: {$and: [{$gte: ["$liftId", 31]}, {$lte: ["$liftId", 40]}]},
                           then: 500
                         },
                       ],
-                      default: "Did not match"
+                      default: 1
                     }
                   }
                 }
             }
           },
-
           {
             $project : {
               _id : 0,
-              skierId : 1,
-              day : 1,
+              skierId : "$_id.skierId",
+              day : "$_id.day",
               liftRides : 1,
               verticals : 1}
           },
-
           {
             $out: "daily-ski-records"
           }
-        ]
+        ],
+
+        {
+          allowDiskUse:true
+        }
       );
-    const res = {
-      statusCode: 200,
-      body: JSON.stringify({
-        message: 'Your function executed successfully!',
-        // input: event,
-      }),
-    };
 
-    callback(null, res)
-  }
 
-  connectToDatabase(mongouri, db => { aggregateSkierVerts(db) });
+    cursor.toArray().then(
+      docs =>{
+        console.log(docs);
+        const res = {
+          statusCode: 200,
+          body: JSON.stringify({
+            message: 'Your function executed successfully!',
+            // input: event,
+          }),
+        };
+
+        callback(null, res)
+      },
+      err => {
+        const res = {
+          statusCode: 500,
+          body: JSON.stringify({
+            message: err,
+            // input: event,
+          }),
+        };
+
+        callback(null, res)
+      }
+    )
+  }// aggregateSkierVertsByDay
+
+  connectToDatabase(mongouri, db => { aggregateSkierVertsByDay(db) });
 };
 
 
