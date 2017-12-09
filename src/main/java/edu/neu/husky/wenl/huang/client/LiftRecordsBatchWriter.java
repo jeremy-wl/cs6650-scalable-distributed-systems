@@ -11,8 +11,8 @@ import java.util.*;
 
 class LiftRecordsBatchWriter {
     private static int records = -1;
-    private static final String ENDPOINT_LOAD_LIFT_RECORDS = "/api/records/batch-load-lift-records";
-    private static final String DATA_SOURCE = Main.CLIENT_DIR + "data/data_day2_800k.csv";
+    private static final String ENDPOINT_LOAD_LIFT_RECORDS = "/records/batch-load-lift-records";
+    private static final String DATA_SOURCE = Main.CLIENT_DIR + "data/data_day1_800k.csv";
 
     static void write() {
         float wallTime;

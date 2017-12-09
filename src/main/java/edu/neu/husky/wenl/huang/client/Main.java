@@ -10,7 +10,7 @@ class Main {
     static final String DOMAIN = "https://9ozxh6xq36.execute-api.us-west-2.amazonaws.com/dev";
 
 //    private static final int DAY_NUM = 1;
-    private static final int DAY_NUM = 999;
+    private static final int DAY_NUM = 1;
 
     static final String CLIENT_DIR = "src/main/java/edu/neu/husky/wenl/huang/client/";
     private static final int N_THREADS_WRITER = 100;
